@@ -25,7 +25,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         imagePicker.delegate = self
-        mapView.delegate = self
+//        mapView.delegate = self
 //        let longPress = UILongPressGestureRecognizer(target: self, action: "mapAction:")
 //        longPress.minimumPressDuration = 1.0
 //        self.mapView.addGestureRecognizer(longPress)
@@ -49,7 +49,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
 
     @IBAction func loadImageButtonTapped(sender: AnyObject) {
-            imagePicker.allowsEditing = false
+//            imagePicker.allowsEditing = false
             imagePicker.sourceType = .PhotoLibrary
             
             presentViewController(imagePicker, animated: true, completion: nil)
@@ -57,11 +57,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
        
-        if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            imageView.contentMode = .ScaleAspectFit
-            imageView.image = pickedImage
-
-           //For showing on the map
+  //      if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+  //          imageView.contentMode = .ScaleAspectFit
+  //          imageView.image = pickedImage
+        
+            imageView.image = info[UIImagePickerControllerOriginalImage] as? UIImage
+        
+        /*For showing on the map
             let url: NSURL = info[UIImagePickerControllerReferenceURL] as! NSURL
             let phAssetResults = PHAsset.fetchAssetsWithALAssetURLs([url], options:nil)
             let asset = phAssetResults.firstObject
@@ -81,7 +83,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             
             print("\(latitude), \(longitude)")
-            
+          */
             
             /*
             let library = ALAssetsLibrary()
@@ -109,7 +111,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     print(error.localizedDescription)
             })
             */
-        }
+  //      }
 
 
   
