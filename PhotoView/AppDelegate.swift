@@ -8,14 +8,25 @@
 
 import UIKit
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    let cognitoIdentityPoolID = "us-east-1:10526319-7dec-4be4-9d19-42faff2a0819"
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
+        let credentialsProvider = AWSCognitoCredentialsProvider(regionType:.USEast1,
+            identityPoolId:"us-east-1:10526319-7dec-4be4-9d19-42faff2a0819")
+        
         // Override point for customization after application launch.
+    
+
+        let configuration = AWSServiceConfiguration(
+            region: .USEast1,
+            credentialsProvider: credentialsProvider)
+        AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = configuration
         return true
     }
 
