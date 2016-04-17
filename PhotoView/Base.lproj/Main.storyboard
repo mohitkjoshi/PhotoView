@@ -26,16 +26,28 @@
                                 </connections>
                             </button>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ael-6T-euz">
-                                <rect key="frame" x="40" y="28" width="240" height="329"/>
+                                <rect key="frame" x="40" y="28" width="240" height="219"/>
                             </mapView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R2s-zb-atl">
-                                <rect key="frame" x="40" y="375" width="240" height="128"/>
+                                <rect key="frame" x="40" y="255" width="66" height="54"/>
                             </imageView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="HmW-eg-mXB">
+                                <rect key="frame" x="20" y="418" width="280" height="76"/>
+                                <color key="backgroundColor" red="0.98958333330000003" green="0.72691117520000004" blue="0.391343938" alpha="1" colorSpace="calibratedRGB"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="2" minimumInteritemSpacing="2" id="YMM-ir-DLh">
+                                    <size key="itemSize" width="60" height="60"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
                         <outlet property="ImageView" destination="R2s-zb-atl" id="MwI-z5-6id"/>
+                        <outlet property="imageCollectionView" destination="HmW-eg-mXB" id="PUU-P2-R9i"/>
                         <outlet property="mapView" destination="ael-6T-euz" id="b3b-eV-Uji"/>
                     </connections>
                 </viewController>

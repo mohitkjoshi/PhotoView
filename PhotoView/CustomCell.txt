@@ -1,0 +1,14 @@
+//
+//  CustomCell.swift
+//  PhotoView
+//
+//  Created by Macintosh on 4/17/16.
+//  Copyright © 2016 Appinspire. All rights reserved.
+//
+
+import UIKit
+
+class CustomCell: UICollectionViewCell {
+
+
+}
