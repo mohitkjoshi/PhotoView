@@ -14,7 +14,6 @@ import Photos
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource{
     @IBOutlet weak var collectionCell: UICollectionViewCell!
 
-    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var imageCollectionView: UICollectionView!
 
@@ -24,7 +23,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let S3BucketName = "publicphotoswithlocation"
     let S3BucketURL = "https://s3.amazonaws.com/publicphotoswithlocation/public/"
     var photoCollection = [PhotoInfo]()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +48,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
        
 
-            //imageView.image =  info[UIImagePickerControllerOriginalImage] as? UIImage
+            let pickedImage =  info[UIImagePickerControllerOriginalImage] as? UIImage
 
            //For showing on the map, get the location
             let url: NSURL = info[UIImagePickerControllerReferenceURL] as! NSURL
@@ -129,7 +127,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let imageURL = NSURL(fileURLWithPath: localPath)
             let uploadRequest1 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
             
-            let data = UIImageJPEGRepresentation(self.imageView.image!, 0.05)
+            let data = UIImageJPEGRepresentation(pickedImage!, 0.05)
             data!.writeToFile(localPath, atomically: true)
             uploadRequest1.bucket = "publicphotoswithlocation"
             uploadRequest1.key =  "public/" + photoId!
@@ -214,19 +212,24 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     override func viewWillAppear(animated: Bool) {
+        
+        var aggregateLatitude:Double = 0.0
+        var aggregateLongitue:Double = 0.0
+
         imagePicker.delegate = self
         mapView.delegate = self
         imageCollectionView.delegate = self
         imageCollectionView.dataSource = self
         imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-        imageCollectionView.backgroundColor = UIColor.redColor()
+        imageCollectionView.backgroundColor = UIColor.orangeColor()
         print("registered ViewCell class with collectionView")
         //get photos from AWS and show on the map
         let session = NSURLSession(configuration: configuration)
-        let lat1 = 37
-        let lat2 = 39
-        let long1 = -123
-        let long2 = -122
+        let lat1 = 40.0
+        let lat2 = 45.0
+        let long1 = -80.0
+        let long2 = -74.0
+
         //get all photos posted within a the map rectangle
         let urlString = NSString(format: "http://ec2-54-84-51-72.compute-1.amazonaws.com:8888/IDlist/?lat1=\(lat1)&lat2=\(lat2)&long1=\(long1)&long2=\(long2)")
         
@@ -261,7 +264,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 
                 do {
                     let getResponse = try NSJSONSerialization.JSONObjectWithData(receivedData, options: .AllowFragments)
-                    
+
                     let list  = getResponse["list"]
                     for listitem in (list as? NSArray)!{
                         let photoId = String(listitem["id"])
@@ -269,17 +272,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                         let longitude = Double(String(listitem["long"]))
                         print(String(photoId) + String(latitude) )
                         
+                        aggregateLatitude += latitude!
+                        aggregateLongitue += longitude!
+                        
                         //autolayout engine must be modified in the main thread
                         NSOperationQueue.mainQueue().addOperationWithBlock {
                             //create a pin and show on the map
-                            //default zoom for map
-                            let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(0.1 , 0.1)
+
                             //get the location
                             if (latitude != nil && longitude != nil) {
                                 let location = CLLocationCoordinate2DMake(latitude!, longitude!)
-                                //map will be show the region around our location
-                                let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(location, theSpan)
-                                self.mapView.setRegion(theRegion, animated: true)
+
                                 
                                 //create a dropped pin
                                 let annotation = MKPointAnnotation()
@@ -307,9 +310,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                 //autolayout engine must be modified in the main thread
                                 NSOperationQueue.mainQueue().addOperationWithBlock {
                                     let img = UIImage(data: data!)
-                                    self.imageView.image = img
                                     self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId))
-                                    self.imageCollectionView.reloadData()
+                                    
+                                    //if this is the last photo
+                                    if(self.photoCollection.count == (list as? NSArray)!.count) {
+                                        self.imageCollectionView.reloadData()
+                                        
+                                        //default zoom for map
+                                        let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(8 , 8)
+                                        //map will be show the region around our location
+                                        aggregateLatitude = aggregateLatitude/Double(self.photoCollection.count)
+                                        aggregateLongitue = aggregateLongitue/Double(self.photoCollection.count)
+                                        let loc = CLLocationCoordinate2DMake(aggregateLatitude, aggregateLongitue)
+                                        let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
+                                        self.mapView.setRegion(theRegion, animated: true)
+                                    }
                                 }
                             } else {
                                 print("error showing s3 image: \(error)")
@@ -362,8 +377,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         // Use the outlet in our custom class to get a reference to the UILabel in the cell
         let img = self.photoCollection[indexPath.item].image
         let imgView = UIImageView(image: img)
-        imgView.frame = CGRectMake(0, 0, 60, 60);
-        cell.backgroundColor = UIColor.yellowColor() // make cell more visible in our example project
+        imgView.contentMode = .ScaleAspectFill
+        imgView.clipsToBounds = true
+        imgView.frame = CGRectMake(0, 0, 92, 92);
+        cell.backgroundColor = UIColor.grayColor() // make cell more visible in our example project
         cell.addSubview(imgView)
 //        imageCollectionView.reloadData()
 //        cell.customImgView.image = img

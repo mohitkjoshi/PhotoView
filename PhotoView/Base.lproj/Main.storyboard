@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -17,36 +18,50 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="efQ-UK-SmQ">
-                                <rect key="frame" x="40" y="518" width="240" height="30"/>
-                                <color key="backgroundColor" red="0.98958333330000003" green="0.72691117520000004" blue="0.391343938" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Load Image"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="efQ-UK-SmQ">
+                                <rect key="frame" x="0.0" y="517" width="320" height="51"/>
+                                <color key="backgroundColor" red="0.78450520833333337" green="0.16406218367046918" blue="0.029970860696209765" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="51" id="WMf-H1-Xsk"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="add your photo">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <connections>
                                     <action selector="loadImageButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LzH-g9-75I"/>
                                 </connections>
                             </button>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ael-6T-euz">
-                                <rect key="frame" x="40" y="28" width="240" height="219"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ael-6T-euz">
+                                <rect key="frame" x="0.0" y="20" width="320" height="415"/>
                             </mapView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R2s-zb-atl">
-                                <rect key="frame" x="40" y="255" width="66" height="54"/>
-                            </imageView>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="HmW-eg-mXB">
-                                <rect key="frame" x="20" y="418" width="280" height="76"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="HmW-eg-mXB">
+                                <rect key="frame" x="0.0" y="433" width="320" height="94"/>
                                 <color key="backgroundColor" red="0.98958333330000003" green="0.72691117520000004" blue="0.391343938" alpha="1" colorSpace="calibratedRGB"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="2" minimumInteritemSpacing="2" id="YMM-ir-DLh">
-                                    <size key="itemSize" width="60" height="60"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="1" minimumInteritemSpacing="1" id="YMM-ir-DLh">
+                                    <size key="itemSize" width="92" height="92"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="2" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells/>
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="ael-6T-euz" secondAttribute="bottom" constant="133" id="27u-Kr-sYN"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="efQ-UK-SmQ" secondAttribute="trailing" constant="-20" id="5G7-SN-oKz"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="efQ-UK-SmQ" secondAttribute="bottom" id="6zv-Om-xof"/>
+                            <constraint firstItem="ael-6T-euz" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="BaI-uE-OR9"/>
+                            <constraint firstItem="ael-6T-euz" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="Bqb-2z-Iis"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ael-6T-euz" secondAttribute="trailing" constant="-20" id="Eit-td-7Or"/>
+                            <constraint firstItem="efQ-UK-SmQ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="UHr-yX-jMK"/>
+                            <constraint firstItem="HmW-eg-mXB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="aUA-0d-vef"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="HmW-eg-mXB" secondAttribute="bottom" constant="41" id="g3j-MW-aIb"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="HmW-eg-mXB" secondAttribute="trailing" constant="-20" id="hXV-XC-Sz9"/>
+                        </constraints>
                     </view>
                     <connections>
-                        <outlet property="ImageView" destination="R2s-zb-atl" id="MwI-z5-6id"/>
                         <outlet property="imageCollectionView" destination="HmW-eg-mXB" id="PUU-P2-R9i"/>
                         <outlet property="mapView" destination="ael-6T-euz" id="b3b-eV-Uji"/>
                     </connections>
