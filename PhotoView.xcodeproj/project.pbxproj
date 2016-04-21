@@ -17,6 +17,7 @@
 		E2D3C2E81CB5B21B008A5921 /* PhotoViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2E71CB5B21B008A5921 /* PhotoViewTests.swift */; };
 		E2D3C2F31CB5B21B008A5921 /* PhotoViewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2F21CB5B21B008A5921 /* PhotoViewUITests.swift */; };
 		E2DAD5BA1CC435B400F4200C /* CustomCell.txt in Sources */ = {isa = PBXBuildFile; fileRef = E2DAD5B91CC435B400F4200C /* CustomCell.txt */; };
+		E2DAD5BE1CC83CCA00F4200C /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DAD5BD1CC83CCA00F4200C /* PopUpViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		E2D3C2F21CB5B21B008A5921 /* PhotoViewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewUITests.swift; sourceTree = "<group>"; };
 		E2D3C2F41CB5B21B008A5921 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E2DAD5B91CC435B400F4200C /* CustomCell.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CustomCell.txt; sourceTree = "<group>"; };
+		E2DAD5BD1CC83CCA00F4200C /* PopUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 		E2D3C2D11CB5B21B008A5921 /* PhotoView */ = {
 			isa = PBXGroup;
 			children = (
+				E2DAD5BD1CC83CCA00F4200C /* PopUpViewController.swift */,
 				E2D3C2D21CB5B21B008A5921 /* AppDelegate.swift */,
 				E2D3C2D41CB5B21B008A5921 /* ViewController.swift */,
 				E2D3C2D61CB5B21B008A5921 /* Main.storyboard */,
@@ -339,6 +342,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2DAD5BE1CC83CCA00F4200C /* PopUpViewController.swift in Sources */,
 				E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */,
 				E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */,
 				E2DAD5BA1CC435B400F4200C /* CustomCell.txt in Sources */,

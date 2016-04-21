@@ -11,7 +11,7 @@ import MapKit
 import Photos
 
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource{
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UIPopoverPresentationControllerDelegate{
     @IBOutlet weak var collectionCell: UICollectionViewCell!
 
     @IBOutlet weak var mapView: MKMapView!
@@ -29,6 +29,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         print("size of photo collection \(photoCollection.count)")
      
     }
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .None
+    }
 
 
     override func didReceiveMemoryWarning() {
@@ -37,8 +41,25 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
 
     @IBAction func loadImageButtonTapped(sender: AnyObject) {
-            imagePicker.sourceType = .PhotoLibrary
-            presentViewController(imagePicker, animated: true, completion: nil)
+//            imagePicker.sourceType = .PhotoLibrary
+//            presentViewController(imagePicker, animated: true, completion: nil)
+        
+            let popupViewController = storyboard?.instantiateViewControllerWithIdentifier("popupView") as! PopUpViewController
+        
+                //set reference to photo collection
+                popupViewController.photoCollection = self.photoCollection
+
+            var frameSize: CGPoint = CGPointMake(UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height)
+            popupViewController.preferredContentSize = CGSizeMake(frameSize.x,frameSize.y);
+//            .preferredContentSize = CGSize(width: UIScreen.mainScreen().bounds.width, height: UIScreen.mainScreen().bounds.height)
+        
+            let navController = UINavigationController(rootViewController: popupViewController)
+            navController.modalPresentationStyle = UIModalPresentationStyle.Popover
+            let popupOver = navController.popoverPresentationController
+            popupOver?.delegate = self
+            popupOver?.sourceView = sender as? UIButton
+            self.presentViewController(navController, animated: true, completion: nil)
+
     }
 
     
