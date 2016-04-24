@@ -26,6 +26,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var photoCollection = [PhotoInfo]()
     var photoIndex:Int = 0
     
+    var hasMapRegionChanged = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("size of collection at viewDidLoad \(photoCollection.count)")
@@ -229,14 +231,33 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
        
-        let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "myPin")
+//        let annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "myPin")
+        var bundlePath:String?
+        if annotation.isKindOfClass(LeafAnnotation)
+        {
+            bundlePath = NSBundle.mainBundle().pathForResource((annotation as? LeafAnnotation)?.imageName, ofType: "gif")
+        } else if annotation.isKindOfClass(SelectedAnnotation) {
+            bundlePath = NSBundle.mainBundle().pathForResource((annotation as? SelectedAnnotation)?.imageName, ofType: "gif")
+       
+        }
+            
+        var img = UIImage(contentsOfFile: bundlePath!)
+        
+        
+        let annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "myPin")
+
         annotationView.canShowCallout = true
         let btn = UIButton(type: .DetailDisclosure)
         annotationView.leftCalloutAccessoryView = btn
+
+        annotationView.image = img
+        annotationView.frame = CGRect(x: 0, y: 0, width: 12, height: 12)
         return annotationView
+
     }
     
     override func viewWillAppear(animated: Bool) {
+        
         
         var aggregateLatitude:Double = 0.0
         var aggregateLongitue:Double = 0.0
@@ -252,8 +273,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         imageCollectionView.delegate = self
         imageCollectionView.dataSource = self
 //        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+//        print("registered ViewCell class with collectionView")
         imageCollectionView.backgroundColor = UIColor.orangeColor()
-        print("registered ViewCell class with collectionView")
+
         //get photos from AWS and show on the map
         let session = NSURLSession(configuration: configuration)
         let lat1 = currLat - initLatDelta/2
@@ -262,136 +284,140 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let long2 = currLong + initLongDelta/2
 
         //get all photos posted within a the map rectangle
-        let urlString = NSString(format: "http://ec2-54-84-51-72.compute-1.amazonaws.com:8888/IDlist/?lat1=\(lat1)&lat2=\(lat2)&long1=\(long1)&long2=\(long2)")
+        if(hasMapRegionChanged){
+            let urlString = NSString(format: "http://ec2-54-84-51-72.compute-1.amazonaws.com:8888/IDlist/?lat1=\(lat1)&lat2=\(lat2)&long1=\(long1)&long2=\(long2)")
         
         
-        print("get url string is \(urlString)")
-        let request : NSMutableURLRequest = NSMutableURLRequest()
-        request.URL = NSURL(string: NSString(format: "%@", urlString) as String)
-        request.HTTPMethod = "GET"
-        request.timeoutInterval = 30
-        
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        
-        let dataTask = session.dataTaskWithRequest(request) {
-            (let data: NSData?, let response: NSURLResponse?, let error: NSError?) -> Void in
+            print("get url string is \(urlString)")
+            let request : NSMutableURLRequest = NSMutableURLRequest()
+            request.URL = NSURL(string: NSString(format: "%@", urlString) as String)
+            request.HTTPMethod = "GET"
+            request.timeoutInterval = 30
             
-            // 1: Check HTTP Response for successful POST request
-            guard let httpResponse = response as? NSHTTPURLResponse, receivedData = data
-                else {
-                    print("error: not a valid http response for list of photos \(response)")
-                    return
-            }
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.addValue("application/json", forHTTPHeaderField: "Accept")
             
-            switch (httpResponse.statusCode)
-            {
-            case 200:
+            
+            let dataTask = session.dataTaskWithRequest(request) {
+                (let data: NSData?, let response: NSURLResponse?, let error: NSError?) -> Void in
                 
-                let response = NSString (data: receivedData, encoding: NSUTF8StringEncoding)
-                print("response is \(response)")
-                
-                
-                do {
-                    let getResponse = try NSJSONSerialization.JSONObjectWithData(receivedData, options: .AllowFragments)
-
-                    let list  = getResponse["list"]
-                    for listitem in (list as? NSArray)!{
-                        let photoId = String(listitem["id"])
-                        let latitude = Double(String(listitem["lat"]))
-                        let longitude = Double(String(listitem["long"]))
-                        print(String(photoId) + String(latitude) )
-                        
-                        aggregateLatitude += latitude!
-                        aggregateLongitue += longitude!
-                        
-                        let annotation = MKPointAnnotation()
-                        //autolayout engine must be modified in the main thread
-                        NSOperationQueue.mainQueue().addOperationWithBlock {
-                            //create a pin and show on the map
-                            //get the location
-                            if (latitude != nil && longitude != nil) {
-                                let location = CLLocationCoordinate2DMake(latitude!, longitude!)
-                                //create a dropped pin
-                                annotation.coordinate = location
-                                annotation.title = "My Favorite Place"
-                                self.mapView.addAnnotation(annotation)
-                            } else {
-                                print("photo do not have geotagging")
-                            }
-                        }//end autolayout main queue block
-                        //display the images from AWS
-                        
-                        let imgURL = NSURL(string: self.S3BucketURL + photoId)
-                        let request: NSURLRequest = NSURLRequest(URL: imgURL!)
-                        let config = NSURLSessionConfiguration.defaultSessionConfiguration()
-                        let session = NSURLSession(configuration: config)
-                        
-                        
-                        
-                        let task = session.dataTaskWithRequest(request, completionHandler: {(data, response, error) in
-                            
-                            if error == nil {
-                                print("got some data back" + (response?.description)!)
-                                
-                                //autolayout engine must be modified in the main thread
-                                NSOperationQueue.mainQueue().addOperationWithBlock {
-                                    let img = UIImage(data: data!)
-                                    self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annot:annotation ))
-                                    
-       //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
-                                    
-                                    if(self.photoCollection.count == (list as? NSArray)!.count) {
-                                        self.imageCollectionView.reloadData()
-                                        
-                                        //default zoom for map
-                                        let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(8 , 8)
-                                        //map will be show the region around our location
-                                        aggregateLatitude = aggregateLatitude/Double(self.photoCollection.count)
-                                        aggregateLongitue = aggregateLongitue/Double(self.photoCollection.count)
-                                        let loc = CLLocationCoordinate2DMake(aggregateLatitude, aggregateLongitue)
-                                        let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
-                                        self.mapView.setRegion(theRegion, animated: true)
-                                        
-                                        //set reference to photo collection
-                                        //self.popupViewController!.photoCollection = self.photoCollection
-                                    }
-                                }
-                            } else {
-                                print("error showing s3 image: \(error)")
-                            }
-                            
-                        });
-                        
-                        
-                        task.resume()
-                        
-                        
-                        
-                        
-                        //display both image and annotation
-                        
-                    }
-                    
-                    
-                    // }
-                } catch {
-                    print("error serializing JSON: \(error)")
+                // 1: Check HTTP Response for successful POST request
+                guard let httpResponse = response as? NSHTTPURLResponse, receivedData = data
+                    else {
+                        print("error: not a valid http response for list of photos \(response)")
+                        return
                 }
                 
-                break
-            case 400:
-                
-                break
-            default:
-                print("POST request got response \(httpResponse.statusCode)")
-            }
-            
-            
-        }
-        dataTask.resume()
+                switch (httpResponse.statusCode)
+                {
+                case 200:
+                    
+                    let response = NSString (data: receivedData, encoding: NSUTF8StringEncoding)
+                    print("response is \(response)")
+                    
+                    
+                    do {
+                        let getResponse = try NSJSONSerialization.JSONObjectWithData(receivedData, options: .AllowFragments)
 
+                        let list  = getResponse["list"]
+                        for listitem in (list as? NSArray)!{
+                            let photoId = String(listitem["id"])
+                            let latitude = Double(String(listitem["lat"]))
+                            let longitude = Double(String(listitem["long"]))
+                            print(String(photoId) + String(latitude) )
+                            
+                            aggregateLatitude += latitude!
+                            aggregateLongitue += longitude!
+                            
+                            let annotation = LeafAnnotation()
+                  
+                            //autolayout engine must be modified in the main thread
+                            NSOperationQueue.mainQueue().addOperationWithBlock {
+                                //create a pin and show on the map
+                                //get the location
+                                if (latitude != nil && longitude != nil) {
+                                    let location = CLLocationCoordinate2DMake(latitude!, longitude!)
+                                    //create a dropped pin
+                                    annotation.coordinate = location
+                                    annotation.title = "My Favorite Place"
+                                    self.mapView.addAnnotation(annotation)
+                                    print("added annotation to map")
+                                } else {
+                                    print("photo do not have geotagging")
+                                }
+                            }//end autolayout main queue block
+                            //display the images from AWS
+                            
+                            let imgURL = NSURL(string: self.S3BucketURL + photoId)
+                            let request: NSURLRequest = NSURLRequest(URL: imgURL!)
+                            let config = NSURLSessionConfiguration.defaultSessionConfiguration()
+                            let session = NSURLSession(configuration: config)
+                            
+                            
+                            
+                            let task = session.dataTaskWithRequest(request, completionHandler: {(data, response, error) in
+                                
+                                if error == nil {
+                                    print("got some data back" + (response?.description)!)
+                                    
+                                    //autolayout engine must be modified in the main thread
+                                    NSOperationQueue.mainQueue().addOperationWithBlock {
+                                        let img = UIImage(data: data!)
+                                        self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annotation:annotation ))
+                                        
+           //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
+                                        
+                                        if(self.photoCollection.count == (list as? NSArray)!.count) {
+                                            self.imageCollectionView.reloadData()
+                                            
+                                            //default zoom for map
+                                            let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(8 , 8)
+                                            //map will be show the region around our location
+                                            aggregateLatitude = aggregateLatitude/Double(self.photoCollection.count)
+                                            aggregateLongitue = aggregateLongitue/Double(self.photoCollection.count)
+                                            let loc = CLLocationCoordinate2DMake(aggregateLatitude, aggregateLongitue)
+                                            let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
+                                            self.mapView.setRegion(theRegion, animated: true)
+                                            
+                                            //set reference to photo collection
+                                            //self.popupViewController!.photoCollection = self.photoCollection
+                                        }
+                                    }
+                                } else {
+                                    print("error showing s3 image: \(error)")
+                                }
+                                
+                            });
+                            
+                            
+                            task.resume()
+                            
+                            
+                            
+                            
+                            //display both image and annotation
+                            
+                        }
+                        
+                        
+                        // }
+                    } catch {
+                        print("error serializing JSON: \(error)")
+                    }
+                    
+                    break
+                case 400:
+                    
+                    break
+                default:
+                    print("POST request got response \(httpResponse.statusCode)")
+                }
+                
+                
+            }
+            dataTask.resume()
+            hasMapRegionChanged = false
+        }
     }
     
     // tell the collection view how many cells to make
@@ -400,17 +426,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return self.photoCollection.count
     }
     
-    //for long touch
+    //for long touch?
     //func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
     //        print("You long pressed cell #\(indexPath.item)!")
     //}
-    
     // make a cell for each cell index path
+    
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         // get a reference to our storyboard cell
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! PhotoCell
-         print("Created a new Cell \(photoCollection.count)")
+         print("Created a new Cell \(indexPath.item)")
         // Use the outlet in our custom class to get a reference to the UILabel in the cell
         let img = self.photoCollection[indexPath.item].image
         let imgView = UIImageView(image: img)
@@ -434,12 +460,33 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         print("You selected cell #\(indexPath.item)!")
         photoIndex = indexPath.item
         //change color of annotation
+        //remove existing annotation and add a new one
+        let photoInfo = self.photoCollection[indexPath.item]
+        let regularAnnotation = photoInfo.annotation
+
+        let selectedAnnotation = SelectedAnnotation()
+        selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
+        selectedAnnotation.title = "location of selected photo"
+        photoInfo.annotation = selectedAnnotation
+        NSOperationQueue.mainQueue().addOperationWithBlock {
+            self.mapView.removeAnnotation(regularAnnotation!)
+            self.mapView.addAnnotation(selectedAnnotation)
+        }
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        print("You Deselected cell #\(indexPath.item)!")
+        let photoInfo = self.photoCollection[indexPath.item] as? PhotoInfo
+        let selectedAnnotation = photoInfo!.annotation!
         
-       // photoCollection[indexPath.item].annotation.
-        //self.performSegueWithIdentifier("SegueToZoomView", sender: self)
-        //popupViewController!.photoIndex = indexPath.item
-        //self.presentViewController(navController!, animated: true, completion: nil)
-        
+        let regularAnnotation = LeafAnnotation()
+        regularAnnotation.coordinate = selectedAnnotation.coordinate
+        regularAnnotation.title = "fall color photo"
+        photoInfo?.annotation = regularAnnotation
+        NSOperationQueue.mainQueue().addOperationWithBlock {
+            self.mapView.addAnnotation(regularAnnotation)
+            self.mapView.removeAnnotation(selectedAnnotation)
+        }
     }
 
     

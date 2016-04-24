@@ -10,6 +10,10 @@
 		6D3FD50113BB767C603F8638 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5365FDE71A3F69C368863391 /* libPods.a */; };
 		E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */; };
 		E235FE851CCBFE8800B429D4 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE841CCBFE8800B429D4 /* PhotoCell.swift */; };
+		E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */ = {isa = PBXBuildFile; fileRef = E235FE891CCC62DF00B429D4 /* leaf.gif */; };
+		E235FE8C1CCC6C8D00B429D4 /* orange_leaf.gif in Resources */ = {isa = PBXBuildFile; fileRef = E235FE8B1CCC6C8D00B429D4 /* orange_leaf.gif */; };
+		E235FE8E1CCD06D900B429D4 /* LeafAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */; };
+		E235FE901CCD077700B429D4 /* SelectedAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */; };
 		E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */; };
 		E2D3C2D31CB5B21B008A5921 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2D21CB5B21B008A5921 /* AppDelegate.swift */; };
 		E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2D41CB5B21B008A5921 /* ViewController.swift */; };
@@ -45,6 +49,10 @@
 		DE7184495ECEBC6E1EDE70B2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomViewController.swift; sourceTree = "<group>"; };
 		E235FE841CCBFE8800B429D4 /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		E235FE891CCC62DF00B429D4 /* leaf.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf.gif; sourceTree = "<group>"; };
+		E235FE8B1CCC6C8D00B429D4 /* orange_leaf.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = orange_leaf.gif; sourceTree = "<group>"; };
+		E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeafAnnotation.swift; sourceTree = "<group>"; };
+		E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedAnnotation.swift; sourceTree = "<group>"; };
 		E283C8DE1CBB2077001F788C /* ObjectiveC_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveC_bridge.h; sourceTree = "<group>"; };
 		E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoInfo.swift; sourceTree = "<group>"; };
 		E2D3C2CF1CB5B21B008A5921 /* PhotoView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoView.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -107,6 +115,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E235FE861CCC58CE00B429D4 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				E235FE8B1CCC6C8D00B429D4 /* orange_leaf.gif */,
+				E235FE891CCC62DF00B429D4 /* leaf.gif */,
+			);
+			name = resources;
+			sourceTree = "<group>";
+		};
 		E2D3C2C61CB5B21B008A5921 = {
 			isa = PBXGroup;
 			children = (
@@ -132,6 +149,7 @@
 		E2D3C2D11CB5B21B008A5921 /* PhotoView */ = {
 			isa = PBXGroup;
 			children = (
+				E235FE861CCC58CE00B429D4 /* resources */,
 				E2DAD5BD1CC83CCA00F4200C /* PopUpViewController.swift */,
 				E2D3C2D21CB5B21B008A5921 /* AppDelegate.swift */,
 				E2D3C2D41CB5B21B008A5921 /* ViewController.swift */,
@@ -144,6 +162,8 @@
 				E2DAD5B91CC435B400F4200C /* CustomCell.txt */,
 				E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */,
 				E235FE841CCBFE8800B429D4 /* PhotoCell.swift */,
+				E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */,
+				E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */,
 			);
 			path = PhotoView;
 			sourceTree = "<group>";
@@ -275,6 +295,8 @@
 			files = (
 				E2D3C2DD1CB5B21B008A5921 /* LaunchScreen.storyboard in Resources */,
 				E2D3C2DA1CB5B21B008A5921 /* Assets.xcassets in Resources */,
+				E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */,
+				E235FE8C1CCC6C8D00B429D4 /* orange_leaf.gif in Resources */,
 				E2D3C2D81CB5B21B008A5921 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,12 +371,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E235FE851CCBFE8800B429D4 /* PhotoCell.swift in Sources */,
+				E235FE8E1CCD06D900B429D4 /* LeafAnnotation.swift in Sources */,
 				E2DAD5BE1CC83CCA00F4200C /* PopUpViewController.swift in Sources */,
 				E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */,
 				E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */,
 				E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */,
 				E2DAD5BA1CC435B400F4200C /* CustomCell.txt in Sources */,
 				E2D3C2D31CB5B21B008A5921 /* AppDelegate.swift in Sources */,
+				E235FE901CCD077700B429D4 /* SelectedAnnotation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,12 +15,11 @@ class PhotoInfo{
     var longitude:Double = 0.0
     var ID = ""
     var annotation: MKPointAnnotation?
-    init(img:UIImage, lat:Double, long:Double, id:String, annot:MKPointAnnotation){
+    init(img:UIImage, lat:Double, long:Double, id:String, annotation:MKPointAnnotation){
         image = img
         latitude = lat
         longitude = long
         ID = id
-        annotation = annot
-        
+        self.annotation = annotation
     }
 }
