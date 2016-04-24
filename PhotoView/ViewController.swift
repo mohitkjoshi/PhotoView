@@ -11,7 +11,8 @@ import MapKit
 import Photos
 
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UIPopoverPresentationControllerDelegate{
+class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
+    
     @IBOutlet weak var collectionCell: UICollectionViewCell!
 
     @IBOutlet weak var mapView: MKMapView!
@@ -23,11 +24,28 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let S3BucketName = "publicphotoswithlocation"
     let S3BucketURL = "https://s3.amazonaws.com/publicphotoswithlocation/public/"
     var photoCollection = [PhotoInfo]()
+    var photoIndex:Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("size of photo collection \(photoCollection.count)")
-     
+        print("size of collection at viewDidLoad \(photoCollection.count)")
+    
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+ //       if let , , zoomedPhotoViewController = segue.destinationViewController as? ZoomViewController {
+        
+            print("prepare for segue \(self.photoCollection.count)")
+            let zoomedPhotoViewController = segue.destinationViewController as? ZoomViewController
+            let cell = sender as? UICollectionViewCell
+            if(cell == nil){
+                print("cell is nil")
+            }
+            let indexPath = imageCollectionView?.indexPathForCell(cell!)
+            print(indexPath)
+            zoomedPhotoViewController!.photoCollection = self.photoCollection
+            zoomedPhotoViewController!.photoIndex = indexPath!.item
+ //       }
     }
     
     func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -44,21 +62,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 //            imagePicker.sourceType = .PhotoLibrary
 //            presentViewController(imagePicker, animated: true, completion: nil)
         
-            let popupViewController = storyboard?.instantiateViewControllerWithIdentifier("popupView") as! PopUpViewController
-        
-                //set reference to photo collection
-                popupViewController.photoCollection = self.photoCollection
 
-            var frameSize: CGPoint = CGPointMake(UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height)
-            popupViewController.preferredContentSize = CGSizeMake(frameSize.x,frameSize.y);
-//            .preferredContentSize = CGSize(width: UIScreen.mainScreen().bounds.width, height: UIScreen.mainScreen().bounds.height)
-        
-            let navController = UINavigationController(rootViewController: popupViewController)
-            navController.modalPresentationStyle = UIModalPresentationStyle.Popover
-            let popupOver = navController.popoverPresentationController
-            popupOver?.delegate = self
-            popupOver?.sourceView = sender as? UIButton
-            self.presentViewController(navController, animated: true, completion: nil)
 
     }
 
@@ -237,19 +241,25 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         var aggregateLatitude:Double = 0.0
         var aggregateLongitue:Double = 0.0
 
+        let currLat = 42.5
+        let currLong = -77.0
+        let currLocation = CLLocationCoordinate2DMake(currLat, currLong)
+        let initLatDelta = 5.0
+        let initLongDelta = 6.0
+        
         imagePicker.delegate = self
         mapView.delegate = self
         imageCollectionView.delegate = self
         imageCollectionView.dataSource = self
-        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+//        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         imageCollectionView.backgroundColor = UIColor.orangeColor()
         print("registered ViewCell class with collectionView")
         //get photos from AWS and show on the map
         let session = NSURLSession(configuration: configuration)
-        let lat1 = 40.0
-        let lat2 = 45.0
-        let long1 = -80.0
-        let long2 = -74.0
+        let lat1 = currLat - initLatDelta/2
+        let lat2 = currLat + initLatDelta/2
+        let long1 = currLong - initLongDelta/2
+        let long2 = currLong + initLongDelta/2
 
         //get all photos posted within a the map rectangle
         let urlString = NSString(format: "http://ec2-54-84-51-72.compute-1.amazonaws.com:8888/IDlist/?lat1=\(lat1)&lat2=\(lat2)&long1=\(long1)&long2=\(long2)")
@@ -296,17 +306,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                         aggregateLatitude += latitude!
                         aggregateLongitue += longitude!
                         
+                        let annotation = MKPointAnnotation()
                         //autolayout engine must be modified in the main thread
                         NSOperationQueue.mainQueue().addOperationWithBlock {
                             //create a pin and show on the map
-
                             //get the location
                             if (latitude != nil && longitude != nil) {
                                 let location = CLLocationCoordinate2DMake(latitude!, longitude!)
-
-                                
                                 //create a dropped pin
-                                let annotation = MKPointAnnotation()
                                 annotation.coordinate = location
                                 annotation.title = "My Favorite Place"
                                 self.mapView.addAnnotation(annotation)
@@ -331,9 +338,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                 //autolayout engine must be modified in the main thread
                                 NSOperationQueue.mainQueue().addOperationWithBlock {
                                     let img = UIImage(data: data!)
-                                    self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId))
+                                    self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annot:annotation ))
                                     
-                                    //if this is the last photo
+       //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
+                                    
                                     if(self.photoCollection.count == (list as? NSArray)!.count) {
                                         self.imageCollectionView.reloadData()
                                         
@@ -345,6 +353,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                         let loc = CLLocationCoordinate2DMake(aggregateLatitude, aggregateLongitue)
                                         let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
                                         self.mapView.setRegion(theRegion, animated: true)
+                                        
+                                        //set reference to photo collection
+                                        //self.popupViewController!.photoCollection = self.photoCollection
                                     }
                                 }
                             } else {
@@ -389,11 +400,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return self.photoCollection.count
     }
     
+    //for long touch
+    //func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
+    //        print("You long pressed cell #\(indexPath.item)!")
+    //}
+    
     // make a cell for each cell index path
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         // get a reference to our storyboard cell
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! PhotoCell
          print("Created a new Cell \(photoCollection.count)")
         // Use the outlet in our custom class to get a reference to the UILabel in the cell
         let img = self.photoCollection[indexPath.item].image
@@ -403,6 +419,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         imgView.frame = CGRectMake(0, 0, 92, 92);
         cell.backgroundColor = UIColor.grayColor() // make cell more visible in our example project
         cell.addSubview(imgView)
+ 
+        
 //        imageCollectionView.reloadData()
 //        cell.customImgView.image = img
         return cell
@@ -412,7 +430,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         // handle tap events
+
         print("You selected cell #\(indexPath.item)!")
+        photoIndex = indexPath.item
+        //change color of annotation
+        
+       // photoCollection[indexPath.item].annotation.
+        //self.performSegueWithIdentifier("SegueToZoomView", sender: self)
+        //popupViewController!.photoIndex = indexPath.item
+        //self.presentViewController(navController!, animated: true, completion: nil)
+        
     }
 
     

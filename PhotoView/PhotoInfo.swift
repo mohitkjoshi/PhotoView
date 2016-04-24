@@ -7,16 +7,20 @@
 //
 
 import Photos
+import MapKit
+
 class PhotoInfo{
     var image:UIImage
     var latitude:Double = 0.0
     var longitude:Double = 0.0
     var ID = ""
-    
-    init(img:UIImage, lat:Double, long:Double, id:String){
+    var annotation: MKPointAnnotation?
+    init(img:UIImage, lat:Double, long:Double, id:String, annot:MKPointAnnotation){
         image = img
         latitude = lat
         longitude = long
         ID = id
+        annotation = annot
+        
     }
 }

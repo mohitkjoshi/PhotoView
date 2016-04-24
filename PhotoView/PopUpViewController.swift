@@ -12,10 +12,11 @@ class PopUpViewController: UIViewController {
     
     @IBOutlet weak var fullImageView: UIImageView!
     var photoCollection = [PhotoInfo]()
+    var photoIndex:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         print(" popup loaded \(photoCollection.count)")
-        let img = self.photoCollection[0].image
+        let img = self.photoCollection[photoIndex].image
         fullImageView.contentMode = .ScaleAspectFit
         //fullImageView.clipsToBounds = true
         fullImageView.image = img

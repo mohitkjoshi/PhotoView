@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		6D3FD50113BB767C603F8638 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5365FDE71A3F69C368863391 /* libPods.a */; };
+		E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */; };
+		E235FE851CCBFE8800B429D4 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE841CCBFE8800B429D4 /* PhotoCell.swift */; };
 		E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */; };
 		E2D3C2D31CB5B21B008A5921 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2D21CB5B21B008A5921 /* AppDelegate.swift */; };
 		E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2D41CB5B21B008A5921 /* ViewController.swift */; };
@@ -41,6 +43,8 @@
 		5365FDE71A3F69C368863391 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3A1BB39DC8BB61BB48A956C /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		DE7184495ECEBC6E1EDE70B2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomViewController.swift; sourceTree = "<group>"; };
+		E235FE841CCBFE8800B429D4 /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		E283C8DE1CBB2077001F788C /* ObjectiveC_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveC_bridge.h; sourceTree = "<group>"; };
 		E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoInfo.swift; sourceTree = "<group>"; };
 		E2D3C2CF1CB5B21B008A5921 /* PhotoView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoView.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +142,8 @@
 				E283C8DE1CBB2077001F788C /* ObjectiveC_bridge.h */,
 				E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */,
 				E2DAD5B91CC435B400F4200C /* CustomCell.txt */,
+				E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */,
+				E235FE841CCBFE8800B429D4 /* PhotoCell.swift */,
 			);
 			path = PhotoView;
 			sourceTree = "<group>";
@@ -342,7 +348,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E235FE851CCBFE8800B429D4 /* PhotoCell.swift in Sources */,
 				E2DAD5BE1CC83CCA00F4200C /* PopUpViewController.swift in Sources */,
+				E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */,
 				E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */,
 				E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */,
 				E2DAD5BA1CC435B400F4200C /* CustomCell.txt in Sources */,
