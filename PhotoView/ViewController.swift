@@ -24,7 +24,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let S3BucketName = "publicphotoswithlocation"
     let S3BucketURL = "https://s3.amazonaws.com/publicphotoswithlocation/public/"
     var photoCollection = [PhotoInfo]()
-    var photoIndex:Int = 0
+    var previousPhotoIndex:Int = 0
     
     var hasMapRegionChanged = true
     
@@ -275,7 +275,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 //        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
 //        print("registered ViewCell class with collectionView")
         imageCollectionView.backgroundColor = UIColor.orangeColor()
-
+        
+/*        var doubleTapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didDoubleTapCollectionView:")
+        doubleTapGesture.numberOfTapsRequired = 2  // add double tap
+        doubleTapGesture.delaysTouchesBegan = true
+        self.imageCollectionView.addGestureRecognizer(doubleTapGesture)
+*/
         //get photos from AWS and show on the map
         let session = NSURLSession(configuration: configuration)
         let lat1 = currLat - initLatDelta/2
@@ -420,17 +425,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         }
     }
     
-    // tell the collection view how many cells to make
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("size of photo collection \(self.photoCollection.count)")
-        return self.photoCollection.count
-    }
-    
-    //for long touch?
-    //func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
-    //        print("You long pressed cell #\(indexPath.item)!")
-    //}
-    // make a cell for each cell index path
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
@@ -458,37 +452,75 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         // handle tap events
 
         print("You selected cell #\(indexPath.item)!")
-        photoIndex = indexPath.item
-        //change color of annotation
-        //remove existing annotation and add a new one
-        let photoInfo = self.photoCollection[indexPath.item]
-        let regularAnnotation = photoInfo.annotation
 
-        let selectedAnnotation = SelectedAnnotation()
-        selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
-        selectedAnnotation.title = "location of selected photo"
-        photoInfo.annotation = selectedAnnotation
-        NSOperationQueue.mainQueue().addOperationWithBlock {
-            self.mapView.removeAnnotation(regularAnnotation!)
-            self.mapView.addAnnotation(selectedAnnotation)
-        }
     }
     
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         print("You Deselected cell #\(indexPath.item)!")
-        let photoInfo = self.photoCollection[indexPath.item] as? PhotoInfo
-        let selectedAnnotation = photoInfo!.annotation!
-        
-        let regularAnnotation = LeafAnnotation()
-        regularAnnotation.coordinate = selectedAnnotation.coordinate
-        regularAnnotation.title = "fall color photo"
-        photoInfo?.annotation = regularAnnotation
-        NSOperationQueue.mainQueue().addOperationWithBlock {
-            self.mapView.addAnnotation(regularAnnotation)
-            self.mapView.removeAnnotation(selectedAnnotation)
-        }
     }
 
+    // tell the collection view how many cells to make
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("size of photo collection \(self.photoCollection.count)")
+        return self.photoCollection.count
+    }
+    
+    //for highlighted photos
+    func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
+
+        
+        print("You highlighted cell #\(indexPath.item)!")
+        
+        if(previousPhotoIndex != -1){
+            let photoInfo = self.photoCollection[previousPhotoIndex] as? PhotoInfo
+            let selectedAnnotation = photoInfo!.annotation!
+            
+            let regularAnnotation = LeafAnnotation()
+            regularAnnotation.coordinate = selectedAnnotation.coordinate
+            regularAnnotation.title = "fall color photo"
+            photoInfo?.annotation = regularAnnotation
+            NSOperationQueue.mainQueue().addOperationWithBlock {
+                self.mapView.removeAnnotation(selectedAnnotation)
+                self.mapView.addAnnotation(regularAnnotation)
+                print("un highlighted annotation for image \(self.previousPhotoIndex)")
+            }
+        }
+       
+        //change color of annotation
+        //remove existing annotation and add a new one
+        let photoInfo = self.photoCollection[indexPath.item]
+        let regularAnnotation = photoInfo.annotation
+        
+        let selectedAnnotation = SelectedAnnotation()
+        selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
+        selectedAnnotation.title = "location of highlighted photo"
+        photoInfo.annotation = selectedAnnotation
+        NSOperationQueue.mainQueue().addOperationWithBlock {
+            self.mapView.removeAnnotation(regularAnnotation!)
+            self.mapView.addAnnotation(selectedAnnotation)
+            print("highlighted annotation for image \(indexPath.item)")
+
+        }
+        previousPhotoIndex = indexPath.item
+    }
+/*
+    // make a cell for each cell index path
+    func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
+        print("You Un highlighted cell #\(indexPath.item)!")
+    }
+  */
+    
+    
+    /*
+    func didDoubleTapCollectionView(gesture: UITapGestureRecognizer) {
+        var pointInCollectionView: CGPoint = gesture.locationInView(self.imageCollectionView)
+        var selectedIndexPath: NSIndexPath = self.imageCollectionView.indexPathForItemAtPoint(pointInCollectionView)!
+        print("selected by double tap \(selectedIndexPath.item)")
+        var selectedCell = self.imageCollectionView.cellForItemAtIndexPath(selectedIndexPath)
+        
+        // Rest code
+    }
+*/
     
 }
 

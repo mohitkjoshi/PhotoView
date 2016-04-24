@@ -55,6 +55,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <gestureRecognizers/>
                                         <connections>
                                             <segue destination="xwh-Dg-TkY" kind="push" identifier="SegueToZoomView" id="nuf-ID-iTV"/>
                                         </connections>
