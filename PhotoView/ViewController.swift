@@ -26,7 +26,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var photoCollection = [PhotoInfo]()
     var previousPhotoIndex:Int = 0
     
-    var hasMapRegionChanged = true
+    var hasMapRegionChanged = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,15 +63,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBAction func loadImageButtonTapped(sender: AnyObject) {
 //            imagePicker.sourceType = .PhotoLibrary
 //            presentViewController(imagePicker, animated: true, completion: nil)
-        
-
-
     }
 
     
-    
-    
-    
+   
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
        
 
@@ -173,23 +168,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
         }
         dataTask.resume()
-        
-
-
-   
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-
-
-        //test AWS UnAuth id not allowed to list tables
+       
+      //test AWS UnAuth id not allowed to list tables
         /*let dynamoDB = AWSDynamoDB.defaultDynamoDB()
         let listTableInput = AWSDynamoDBListTablesInput()
             dynamoDB.listTables(listTableInput).continueWithBlock{ (task: AWSTask!) -> AnyObject? in
@@ -210,7 +190,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
 
         //dismiss image picker
-            dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
 
@@ -253,46 +233,73 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         annotationView.image = img
         annotationView.frame = CGRect(x: 0, y: 0, width: 12, height: 12)
         return annotationView
-
+    }
+ 
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        let myRegion = mapView.region
+        print ("latitude \(myRegion.center.latitude) longitude \(myRegion.center.longitude) delta \(myRegion.span.latitudeDelta)")
+        let south = myRegion.center.latitude - myRegion.span.latitudeDelta / 2.0
+        let north = myRegion.center.latitude + myRegion.span.latitudeDelta / 2.0
+        let west = myRegion.center.longitude - myRegion.span.longitudeDelta / 2.0
+        let east = myRegion.center.longitude + myRegion.span.longitudeDelta / 2.0
+        print("calling resetview \(south), \(north), \(west), \(east)")
+        resetView( south, lat2: north, long1: west, long2: east)
     }
     
     override func viewWillAppear(animated: Bool) {
-        
-        
-        var aggregateLatitude:Double = 0.0
-        var aggregateLongitue:Double = 0.0
-
-        let currLat = 42.5
-        let currLong = -77.0
-        let currLocation = CLLocationCoordinate2DMake(currLat, currLong)
-        let initLatDelta = 5.0
-        let initLongDelta = 6.0
-        
         imagePicker.delegate = self
         mapView.delegate = self
         imageCollectionView.delegate = self
         imageCollectionView.dataSource = self
-//        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-//        print("registered ViewCell class with collectionView")
+        
+        let currLat = 40.5
+        let currLong = -75.0
+        let currLocation = CLLocationCoordinate2DMake(currLat, currLong)
+        //        let initLatDelta = 5.0
+        //        let initLongDelta = 6.0
+        let initLatDelta = 2.5
+        let initLongDelta = 3.0
+        //        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+        //        print("registered ViewCell class with collectionView")
         imageCollectionView.backgroundColor = UIColor.orangeColor()
         
-/*        var doubleTapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didDoubleTapCollectionView:")
+        /*        var doubleTapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didDoubleTapCollectionView:")
         doubleTapGesture.numberOfTapsRequired = 2  // add double tap
         doubleTapGesture.delaysTouchesBegan = true
         self.imageCollectionView.addGestureRecognizer(doubleTapGesture)
-*/
+        */
         //get photos from AWS and show on the map
-        let session = NSURLSession(configuration: configuration)
-        let lat1 = currLat - initLatDelta/2
-        let lat2 = currLat + initLatDelta/2
-        let long1 = currLong - initLongDelta/2
-        let long2 = currLong + initLongDelta/2
+        
+        let lat1 = currLat - initLatDelta/2 //south
+        let lat2 = currLat + initLatDelta/2 //north
+        
+        let long1 = currLong - initLongDelta/2  //west
+        let long2 = currLong + initLongDelta/2  //east
+        
+        let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(4 , 4)
+        //map will be show the region around our location
+        let loc = CLLocationCoordinate2DMake(currLat, currLong)
+        let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
+        self.mapView.setRegion(theRegion, animated: true)
+        resetView(lat1, lat2: lat2, long1: long1, long2: long2)
+        
+        hasMapRegionChanged = true
+       
+    }
+    
+    func resetView(lat1:Double, lat2:Double, long1:Double, long2:Double) {
+        
+        //a new query will fetch new images. If the images already exist, do not overwrite them. For now, overwriting them
+        photoCollection = [PhotoInfo]()
+        previousPhotoIndex = 0
+        //zoomedPhotoViewController.photoCollection = photoCollection
 
         //get all photos posted within a the map rectangle
         if(hasMapRegionChanged){
+            let session = NSURLSession(configuration: configuration)
             let urlString = NSString(format: "http://ec2-54-84-51-72.compute-1.amazonaws.com:8888/IDlist/?lat1=\(lat1)&lat2=\(lat2)&long1=\(long1)&long2=\(long2)")
-        
-        
+            
+            
             print("get url string is \(urlString)")
             let request : NSMutableURLRequest = NSMutableURLRequest()
             request.URL = NSURL(string: NSString(format: "%@", urlString) as String)
@@ -323,7 +330,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     
                     do {
                         let getResponse = try NSJSONSerialization.JSONObjectWithData(receivedData, options: .AllowFragments)
-
+                        
                         let list  = getResponse["list"]
                         for listitem in (list as? NSArray)!{
                             let photoId = String(listitem["id"])
@@ -331,11 +338,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             let longitude = Double(String(listitem["long"]))
                             print(String(photoId) + String(latitude) )
                             
-                            aggregateLatitude += latitude!
-                            aggregateLongitue += longitude!
-                            
                             let annotation = LeafAnnotation()
-                  
+                            
                             //autolayout engine must be modified in the main thread
                             NSOperationQueue.mainQueue().addOperationWithBlock {
                                 //create a pin and show on the map
@@ -370,22 +374,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                         let img = UIImage(data: data!)
                                         self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annotation:annotation ))
                                         
-           //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
+                                        //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
                                         
                                         if(self.photoCollection.count == (list as? NSArray)!.count) {
                                             self.imageCollectionView.reloadData()
-                                            
-                                            //default zoom for map
-                                            let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(8 , 8)
-                                            //map will be show the region around our location
-                                            aggregateLatitude = aggregateLatitude/Double(self.photoCollection.count)
-                                            aggregateLongitue = aggregateLongitue/Double(self.photoCollection.count)
-                                            let loc = CLLocationCoordinate2DMake(aggregateLatitude, aggregateLongitue)
-                                            let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
-                                            self.mapView.setRegion(theRegion, animated: true)
-                                            
-                                            //set reference to photo collection
-                                            //self.popupViewController!.photoCollection = self.photoCollection
+                                            self.hasMapRegionChanged = true
                                         }
                                     }
                                 } else {
@@ -394,18 +387,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                 
                             });
                             
-                            
                             task.resume()
-                            
-                            
-                            
-                            
-                            //display both image and annotation
-                            
                         }
-                        
-                        
-                        // }
+
                     } catch {
                         print("error serializing JSON: \(error)")
                     }
@@ -424,7 +408,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             hasMapRegionChanged = false
         }
     }
-    
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
@@ -447,7 +430,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     // MARK: - UICollectionViewDelegate protocol
-    
+ /*
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         // handle tap events
 
@@ -458,7 +441,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         print("You Deselected cell #\(indexPath.item)!")
     }
-
+*/
     // tell the collection view how many cells to make
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         print("size of photo collection \(self.photoCollection.count)")
@@ -467,41 +450,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     //for highlighted photos
     func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
-
-        
         print("You highlighted cell #\(indexPath.item)!")
-        
-        if(previousPhotoIndex != -1){
-            let photoInfo = self.photoCollection[previousPhotoIndex] as? PhotoInfo
-            let selectedAnnotation = photoInfo!.annotation!
-            
-            let regularAnnotation = LeafAnnotation()
-            regularAnnotation.coordinate = selectedAnnotation.coordinate
-            regularAnnotation.title = "fall color photo"
-            photoInfo?.annotation = regularAnnotation
-            NSOperationQueue.mainQueue().addOperationWithBlock {
-                self.mapView.removeAnnotation(selectedAnnotation)
-                self.mapView.addAnnotation(regularAnnotation)
-                print("un highlighted annotation for image \(self.previousPhotoIndex)")
-            }
-        }
-       
-        //change color of annotation
-        //remove existing annotation and add a new one
-        let photoInfo = self.photoCollection[indexPath.item]
-        let regularAnnotation = photoInfo.annotation
-        
-        let selectedAnnotation = SelectedAnnotation()
-        selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
-        selectedAnnotation.title = "location of highlighted photo"
-        photoInfo.annotation = selectedAnnotation
-        NSOperationQueue.mainQueue().addOperationWithBlock {
-            self.mapView.removeAnnotation(regularAnnotation!)
-            self.mapView.addAnnotation(selectedAnnotation)
-            print("highlighted annotation for image \(indexPath.item)")
-
-        }
-        previousPhotoIndex = indexPath.item
+        highlghtAnnotation(indexPath.item)
     }
 /*
     // make a cell for each cell index path
@@ -521,6 +471,41 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         // Rest code
     }
 */
+    
+    func highlghtAnnotation(index:Int){
+        if(previousPhotoIndex != -1){
+            let photoInfo = self.photoCollection[previousPhotoIndex] as? PhotoInfo
+            let selectedAnnotation = photoInfo!.annotation!
+            
+            let regularAnnotation = LeafAnnotation()
+            regularAnnotation.coordinate = selectedAnnotation.coordinate
+            regularAnnotation.title = "fall color photo"
+            photoInfo?.annotation = regularAnnotation
+            NSOperationQueue.mainQueue().addOperationWithBlock {
+                self.mapView.removeAnnotation(selectedAnnotation)
+                self.mapView.addAnnotation(regularAnnotation)
+                print("un highlighted annotation for image \(self.previousPhotoIndex)")
+            }
+        }
+        
+        //change color of annotation
+        //remove existing annotation and add a new one
+        let photoInfo = self.photoCollection[index]
+        let regularAnnotation = photoInfo.annotation
+        
+        let selectedAnnotation = SelectedAnnotation()
+        selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
+        selectedAnnotation.title = "location of highlighted photo"
+        photoInfo.annotation = selectedAnnotation
+        NSOperationQueue.mainQueue().addOperationWithBlock {
+            self.mapView.removeAnnotation(regularAnnotation!)
+            self.mapView.addAnnotation(selectedAnnotation)
+            print("highlighted annotation for image \(index)")
+            
+        }
+        previousPhotoIndex = index
+    
+    }
     
 }
 
