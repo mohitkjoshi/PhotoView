@@ -10,9 +10,13 @@ import UIKit
 import MapKit
 import Photos
 
+var photoCollection = [PhotoInfo]()
+var previousPhotoIndex:Int = -1
+//let S3BucketName = "publicphotoswithlocation"
+let S3BucketURL = "https://s3.amazonaws.com/publicphotoswithlocation/public/"
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
-    
+
     @IBOutlet weak var collectionCell: UICollectionViewCell!
 
     @IBOutlet weak var mapView: MKMapView!
@@ -21,12 +25,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     let imagePicker = UIImagePickerController()
     let configuration = NSURLSessionConfiguration .defaultSessionConfiguration()
-    let S3BucketName = "publicphotoswithlocation"
-    let S3BucketURL = "https://s3.amazonaws.com/publicphotoswithlocation/public/"
-    var photoCollection = [PhotoInfo]()
-    var previousPhotoIndex:Int = 0
+
+
+
     
-    var hasMapRegionChanged = false
+    var hasMapRegionChanged = true
+    var initialViewLoadComplete = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +41,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
  //       if let , , zoomedPhotoViewController = segue.destinationViewController as? ZoomViewController {
         
-            print("prepare for segue \(self.photoCollection.count)")
+            print("prepare for segue \(photoCollection.count)")
             let zoomedPhotoViewController = segue.destinationViewController as? ZoomViewController
             let cell = sender as? UICollectionViewCell
             if(cell == nil){
@@ -45,9 +49,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
             let indexPath = imageCollectionView?.indexPathForCell(cell!)
             print(indexPath)
-            zoomedPhotoViewController!.photoCollection = self.photoCollection
+ //         zoomedPhotoViewController!.photoCollection = photoCollection
             zoomedPhotoViewController!.photoIndex = indexPath!.item
  //       }
+            //reset should be called only during initial page load, but not when use returns from segue
+            print("value of RegionChanged at segue \(hasMapRegionChanged)")
+            hasMapRegionChanged = false
     }
     
     func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -61,8 +68,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
 
     @IBAction func loadImageButtonTapped(sender: AnyObject) {
-//            imagePicker.sourceType = .PhotoLibrary
-//            presentViewController(imagePicker, animated: true, completion: nil)
+            imagePicker.sourceType = .PhotoLibrary
+	            presentViewController(imagePicker, animated: true, completion: nil)
     }
 
     
@@ -143,20 +150,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             let documentDirectory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first! as String
             print(documentDirectory)
+   
             // getting local path
             let localPath = (documentDirectory as NSString).stringByAppendingPathComponent(imageName!)
             print(localPath)
-            let imageURL = NSURL(fileURLWithPath: localPath)
             let uploadRequest1 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
-            
-            let data = UIImageJPEGRepresentation(pickedImage!, 0.05)
+            var data = UIImageJPEGRepresentation(pickedImage!, 0.25)
             data!.writeToFile(localPath, atomically: true)
+
+            let imageURL = NSURL(fileURLWithPath: localPath)
             uploadRequest1.bucket = "publicphotoswithlocation"
             uploadRequest1.key =  "public/" + photoId!
             uploadRequest1.body = imageURL
-            
+            uploadRequest1.ACL = AWSS3ObjectCannedACL.PublicRead
             let task = transferManager.upload(uploadRequest1)
-            
+
             task.continueWithBlock { (task: AWSTask!) -> AnyObject! in
                 if task.error != nil {
                     print("Error: \(task.error)")
@@ -166,6 +174,40 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 return nil
             }
 
+//upload a thumbnail as well, maintaining the aspect ratio with target size of 184 by 184 pixels, since we are showing in 92 by 92 points, so this works well on iphone 6 plus as well
+//            let scl = UIScreen.mainScreen().scale
+            //print("scl \(scl)")
+            let scale = pickedImage!.size.height<pickedImage!.size.width ? 276/pickedImage!.size.height : 276/pickedImage!.size.width
+            let newSize = CGSize(width: pickedImage!.size.width * scale, height: pickedImage!.size.height * scale)
+            print("scale \(scale)")
+       
+            UIGraphicsBeginImageContext(newSize)
+            pickedImage!.drawInRect(CGRectMake(0, 0, pickedImage!.size.width * scale, pickedImage!.size.height * scale))
+            let thumbnailImg = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+       
+            
+
+            let thumbLocalPath = (documentDirectory as NSString).stringByAppendingPathComponent("thumbnail_" + imageName!)
+            let thumbImgURL = NSURL(fileURLWithPath: thumbLocalPath)
+//            let data2 = UIImageJPEGRepresentation(pickedImage!, scale * scale)
+            let data2 = UIImageJPEGRepresentation(thumbnailImg, 0.5)
+            data2!.writeToFile(thumbLocalPath, atomically: true)
+            
+            let uploadRequest2 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
+            uploadRequest2.bucket = "publicphotoswithlocation"
+            uploadRequest2.key = "public/thumbnail_" + photoId!
+            uploadRequest2.body = thumbImgURL
+            uploadRequest2.ACL = AWSS3ObjectCannedACL.PublicRead
+            let task1 = transferManager.upload(uploadRequest2)
+            task1.continueWithBlock { (task: AWSTask!) -> AnyObject! in
+                if task.error != nil {
+                    print("Error: \(task.error)")
+                } else {
+                    print("Upload successful")
+                }
+                return nil
+            }
         }
         dataTask.resume()
        
@@ -236,14 +278,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
  
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        let myRegion = mapView.region
-        print ("latitude \(myRegion.center.latitude) longitude \(myRegion.center.longitude) delta \(myRegion.span.latitudeDelta)")
-        let south = myRegion.center.latitude - myRegion.span.latitudeDelta / 2.0
-        let north = myRegion.center.latitude + myRegion.span.latitudeDelta / 2.0
-        let west = myRegion.center.longitude - myRegion.span.longitudeDelta / 2.0
-        let east = myRegion.center.longitude + myRegion.span.longitudeDelta / 2.0
-        print("calling resetview \(south), \(north), \(west), \(east)")
-        resetView( south, lat2: north, long1: west, long2: east)
+        if(initialViewLoadComplete) {
+            let myRegion = mapView.region
+            print ("latitude \(myRegion.center.latitude) longitude \(myRegion.center.longitude) delta \(myRegion.span.latitudeDelta)")
+            let south = myRegion.center.latitude - myRegion.span.latitudeDelta / 2.0
+            let north = myRegion.center.latitude + myRegion.span.latitudeDelta / 2.0
+            let west = myRegion.center.longitude - myRegion.span.longitudeDelta / 2.0
+            let east = myRegion.center.longitude + myRegion.span.longitudeDelta / 2.0
+            print("calling resetview \(south), \(north), \(west), \(east)")
+            hasMapRegionChanged = true
+            resetView( south, lat2: north, long1: west, long2: east)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -252,50 +297,63 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         imageCollectionView.delegate = self
         imageCollectionView.dataSource = self
         
-        let currLat = 40.5
-        let currLong = -75.0
-        let currLocation = CLLocationCoordinate2DMake(currLat, currLong)
-        //        let initLatDelta = 5.0
-        //        let initLongDelta = 6.0
-        let initLatDelta = 2.5
-        let initLongDelta = 3.0
-        //        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-        //        print("registered ViewCell class with collectionView")
-        imageCollectionView.backgroundColor = UIColor.orangeColor()
+        if(!initialViewLoadComplete) {
+            let currLat = 40.5
+            let currLong = -75.0
+            let currLocation = CLLocationCoordinate2DMake(currLat, currLong)
+            //        let initLatDelta = 5.0
+            //        let initLongDelta = 6.0
+            let initLatDelta = 2.5
+            let initLongDelta = 3.0
+            //        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+            //        print("registered ViewCell class with collectionView")
+            imageCollectionView.backgroundColor = UIColor.orangeColor()
+            
+            /*        var doubleTapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didDoubleTapCollectionView:")
+            doubleTapGesture.numberOfTapsRequired = 2  // add double tap
+            doubleTapGesture.delaysTouchesBegan = true
+            self.imageCollectionView.addGestureRecognizer(doubleTapGesture)
+            */
+            //get photos from AWS and show on the map
+            
+            let lat1 = currLat - initLatDelta/2 //south
+            let lat2 = currLat + initLatDelta/2 //north
+            
+            let long1 = currLong - initLongDelta/2  //west
+            let long2 = currLong + initLongDelta/2  //east
+            
+            let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(4 , 4)
+            //map will be show the region around our location
+            let loc = CLLocationCoordinate2DMake(currLat, currLong)
+            let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
+            self.mapView.setRegion(theRegion, animated: true)
+            
+            //reset should be called only during initial page load, but not when use returns from segue
+
+
+            print("View will appear resetView call")
+            resetView(lat1, lat2: lat2, long1: long1, long2: long2)
+        }
         
-        /*        var doubleTapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "didDoubleTapCollectionView:")
-        doubleTapGesture.numberOfTapsRequired = 2  // add double tap
-        doubleTapGesture.delaysTouchesBegan = true
-        self.imageCollectionView.addGestureRecognizer(doubleTapGesture)
-        */
-        //get photos from AWS and show on the map
-        
-        let lat1 = currLat - initLatDelta/2 //south
-        let lat2 = currLat + initLatDelta/2 //north
-        
-        let long1 = currLong - initLongDelta/2  //west
-        let long2 = currLong + initLongDelta/2  //east
-        
-        let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(4 , 4)
-        //map will be show the region around our location
-        let loc = CLLocationCoordinate2DMake(currLat, currLong)
-        let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
-        self.mapView.setRegion(theRegion, animated: true)
-        resetView(lat1, lat2: lat2, long1: long1, long2: long2)
-        
-        hasMapRegionChanged = true
-       
     }
     
     func resetView(lat1:Double, lat2:Double, long1:Double, long2:Double) {
         
         //a new query will fetch new images. If the images already exist, do not overwrite them. For now, overwriting them
-        photoCollection = [PhotoInfo]()
-        previousPhotoIndex = 0
+        
+
         //zoomedPhotoViewController.photoCollection = photoCollection
 
         //get all photos posted within a the map rectangle
         if(hasMapRegionChanged){
+            //before we set photoCollection to a new Array, we need to remove the annotations which were already added to the MapView
+            //        self.mapView.removeAnnotation(selectedAnnotation)
+            
+            //
+            photoCollection = [PhotoInfo]()
+            previousPhotoIndex = -1
+
+            
             let session = NSURLSession(configuration: configuration)
             let urlString = NSString(format: "http://ec2-54-84-51-72.compute-1.amazonaws.com:8888/IDlist/?lat1=\(lat1)&lat2=\(lat2)&long1=\(long1)&long2=\(long2)")
             
@@ -357,7 +415,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             }//end autolayout main queue block
                             //display the images from AWS
                             
-                            let imgURL = NSURL(string: self.S3BucketURL + photoId)
+                            let imgURL = NSURL(string: S3BucketURL + "thumbnail_" + photoId)
                             let request: NSURLRequest = NSURLRequest(URL: imgURL!)
                             let config = NSURLSessionConfiguration.defaultSessionConfiguration()
                             let session = NSURLSession(configuration: config)
@@ -372,13 +430,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                     //autolayout engine must be modified in the main thread
                                     NSOperationQueue.mainQueue().addOperationWithBlock {
                                         let img = UIImage(data: data!)
-                                        self.photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annotation:annotation ))
+                                        photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annotation:annotation ))
                                         
                                         //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
                                         
-                                        if(self.photoCollection.count == (list as? NSArray)!.count) {
+                                        if(photoCollection.count == (list as? NSArray)!.count) {
                                             self.imageCollectionView.reloadData()
-                                            self.hasMapRegionChanged = true
+                                            //LoadInitialView and MapResize get fired simultaneously. Wait till last image load to avoid multiple loads in parallel.
+                                            self.initialViewLoadComplete = true
                                         }
                                     }
                                 } else {
@@ -405,6 +464,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 
             }
             dataTask.resume()
+            //set the flag when worker thread completes, not in the main thread
+            print("regionChanged False in worker tread")
             hasMapRegionChanged = false
         }
     }
@@ -415,7 +476,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath: indexPath) as! PhotoCell
          print("Created a new Cell \(indexPath.item)")
         // Use the outlet in our custom class to get a reference to the UILabel in the cell
-        let img = self.photoCollection[indexPath.item].image
+        let img = photoCollection[indexPath.item].image
         let imgView = UIImageView(image: img)
         imgView.contentMode = .ScaleAspectFill
         imgView.clipsToBounds = true
@@ -444,8 +505,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 */
     // tell the collection view how many cells to make
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("size of photo collection \(self.photoCollection.count)")
-        return self.photoCollection.count
+        print("size of photo collection \(photoCollection.count)")
+        return photoCollection.count
     }
     
     //for highlighted photos
@@ -473,36 +534,37 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 */
     
     func highlghtAnnotation(index:Int){
+        print("previous index \(previousPhotoIndex) new Index \(index)")
         if(previousPhotoIndex != -1){
-            let photoInfo = self.photoCollection[previousPhotoIndex] as? PhotoInfo
+            let photoInfo = photoCollection[previousPhotoIndex] as? PhotoInfo
             let selectedAnnotation = photoInfo!.annotation!
             
             let regularAnnotation = LeafAnnotation()
             regularAnnotation.coordinate = selectedAnnotation.coordinate
             regularAnnotation.title = "fall color photo"
             photoInfo?.annotation = regularAnnotation
-            NSOperationQueue.mainQueue().addOperationWithBlock {
+//            NSOperationQueue.mainQueue().addOperationWithBlock {
                 self.mapView.removeAnnotation(selectedAnnotation)
                 self.mapView.addAnnotation(regularAnnotation)
-                print("un highlighted annotation for image \(self.previousPhotoIndex)")
-            }
+                print("un highlighted annotation for image \(previousPhotoIndex)")
+//            }
         }
         
         //change color of annotation
         //remove existing annotation and add a new one
-        let photoInfo = self.photoCollection[index]
+        let photoInfo = photoCollection[index]
         let regularAnnotation = photoInfo.annotation
         
         let selectedAnnotation = SelectedAnnotation()
         selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
         selectedAnnotation.title = "location of highlighted photo"
         photoInfo.annotation = selectedAnnotation
-        NSOperationQueue.mainQueue().addOperationWithBlock {
+//        NSOperationQueue.mainQueue().addOperationWithBlock {
             self.mapView.removeAnnotation(regularAnnotation!)
             self.mapView.addAnnotation(selectedAnnotation)
             print("highlighted annotation for image \(index)")
             
-        }
+//	        }
         previousPhotoIndex = index
     
     }

@@ -11,7 +11,6 @@
 		E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */; };
 		E235FE851CCBFE8800B429D4 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE841CCBFE8800B429D4 /* PhotoCell.swift */; };
 		E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */ = {isa = PBXBuildFile; fileRef = E235FE891CCC62DF00B429D4 /* leaf.gif */; };
-		E235FE8C1CCC6C8D00B429D4 /* orange_leaf.gif in Resources */ = {isa = PBXBuildFile; fileRef = E235FE8B1CCC6C8D00B429D4 /* orange_leaf.gif */; };
 		E235FE8E1CCD06D900B429D4 /* LeafAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */; };
 		E235FE901CCD077700B429D4 /* SelectedAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */; };
 		E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */; };
@@ -24,6 +23,10 @@
 		E2D3C2F31CB5B21B008A5921 /* PhotoViewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2F21CB5B21B008A5921 /* PhotoViewUITests.swift */; };
 		E2DAD5BA1CC435B400F4200C /* CustomCell.txt in Sources */ = {isa = PBXBuildFile; fileRef = E2DAD5B91CC435B400F4200C /* CustomCell.txt */; };
 		E2DAD5BE1CC83CCA00F4200C /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DAD5BD1CC83CCA00F4200C /* PopUpViewController.swift */; };
+		E2F4DB1A1CE3B48F008084D8 /* leaf1_yellow.gif in Resources */ = {isa = PBXBuildFile; fileRef = E2F4DB191CE3B48F008084D8 /* leaf1_yellow.gif */; };
+		E2F4DB1C1CE3B627008084D8 /* leaf_green.gif in Resources */ = {isa = PBXBuildFile; fileRef = E2F4DB1B1CE3B627008084D8 /* leaf_green.gif */; };
+		E2F4DB201CE3B89D008084D8 /* leaf_orange.gif in Resources */ = {isa = PBXBuildFile; fileRef = E2F4DB1F1CE3B89D008084D8 /* leaf_orange.gif */; };
+		E2F4DB221CE3BBFC008084D8 /* leaf_orange_dark.gif in Resources */ = {isa = PBXBuildFile; fileRef = E2F4DB211CE3BBFC008084D8 /* leaf_orange_dark.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,7 +53,6 @@
 		E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomViewController.swift; sourceTree = "<group>"; };
 		E235FE841CCBFE8800B429D4 /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		E235FE891CCC62DF00B429D4 /* leaf.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf.gif; sourceTree = "<group>"; };
-		E235FE8B1CCC6C8D00B429D4 /* orange_leaf.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = orange_leaf.gif; sourceTree = "<group>"; };
 		E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeafAnnotation.swift; sourceTree = "<group>"; };
 		E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedAnnotation.swift; sourceTree = "<group>"; };
 		E283C8DE1CBB2077001F788C /* ObjectiveC_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveC_bridge.h; sourceTree = "<group>"; };
@@ -70,6 +72,10 @@
 		E2D3C2F41CB5B21B008A5921 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E2DAD5B91CC435B400F4200C /* CustomCell.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CustomCell.txt; sourceTree = "<group>"; };
 		E2DAD5BD1CC83CCA00F4200C /* PopUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
+		E2F4DB191CE3B48F008084D8 /* leaf1_yellow.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf1_yellow.gif; sourceTree = "<group>"; };
+		E2F4DB1B1CE3B627008084D8 /* leaf_green.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf_green.gif; sourceTree = "<group>"; };
+		E2F4DB1F1CE3B89D008084D8 /* leaf_orange.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf_orange.gif; sourceTree = "<group>"; };
+		E2F4DB211CE3BBFC008084D8 /* leaf_orange_dark.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf_orange_dark.gif; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,7 +124,10 @@
 		E235FE861CCC58CE00B429D4 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				E235FE8B1CCC6C8D00B429D4 /* orange_leaf.gif */,
+				E2F4DB211CE3BBFC008084D8 /* leaf_orange_dark.gif */,
+				E2F4DB1F1CE3B89D008084D8 /* leaf_orange.gif */,
+				E2F4DB1B1CE3B627008084D8 /* leaf_green.gif */,
+				E2F4DB191CE3B48F008084D8 /* leaf1_yellow.gif */,
 				E235FE891CCC62DF00B429D4 /* leaf.gif */,
 			);
 			name = resources;
@@ -293,11 +302,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2F4DB1A1CE3B48F008084D8 /* leaf1_yellow.gif in Resources */,
+				E2F4DB1C1CE3B627008084D8 /* leaf_green.gif in Resources */,
 				E2D3C2DD1CB5B21B008A5921 /* LaunchScreen.storyboard in Resources */,
 				E2D3C2DA1CB5B21B008A5921 /* Assets.xcassets in Resources */,
+				E2F4DB221CE3BBFC008084D8 /* leaf_orange_dark.gif in Resources */,
 				E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */,
-				E235FE8C1CCC6C8D00B429D4 /* orange_leaf.gif in Resources */,
 				E2D3C2D81CB5B21B008A5921 /* Main.storyboard in Resources */,
+				E2F4DB201CE3B89D008084D8 /* leaf_orange.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

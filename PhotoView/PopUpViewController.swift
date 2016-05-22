@@ -17,7 +17,7 @@ class PopUpViewController: UIViewController {
         super.viewDidLoad()
         print(" popup loaded \(photoCollection.count)")
         let img = self.photoCollection[photoIndex].image
-        fullImageView.contentMode = .ScaleAspectFit
+        //fullImageView.contentMode = .ScaleAspectFit
         //fullImageView.clipsToBounds = true
         fullImageView.image = img
         //let imgView = UIImageView(image: img)

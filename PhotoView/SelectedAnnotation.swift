@@ -9,6 +9,6 @@
 import MapKit
 
 class SelectedAnnotation: MKPointAnnotation {
-    let imageName = "orange_leaf"
+    let imageName = "leaf"
 }
 

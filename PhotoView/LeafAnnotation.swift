@@ -9,5 +9,5 @@
 import MapKit
 
 class LeafAnnotation: MKPointAnnotation {
-    let imageName = "leaf"
+    let imageName = "leaf_orange_dark"
 }
