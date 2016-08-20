@@ -13,6 +13,7 @@
 		E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */ = {isa = PBXBuildFile; fileRef = E235FE891CCC62DF00B429D4 /* leaf.gif */; };
 		E235FE8E1CCD06D900B429D4 /* LeafAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */; };
 		E235FE901CCD077700B429D4 /* SelectedAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */; };
+		E2CB50821D656A7E00F5079A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2CB50811D656A7E00F5079A /* Images.xcassets */; };
 		E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */; };
 		E2D3C2D31CB5B21B008A5921 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2D21CB5B21B008A5921 /* AppDelegate.swift */; };
 		E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D3C2D41CB5B21B008A5921 /* ViewController.swift */; };
@@ -56,8 +57,9 @@
 		E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeafAnnotation.swift; sourceTree = "<group>"; };
 		E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedAnnotation.swift; sourceTree = "<group>"; };
 		E283C8DE1CBB2077001F788C /* ObjectiveC_bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveC_bridge.h; sourceTree = "<group>"; };
+		E2CB50811D656A7E00F5079A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E2D3AD741CC404F8004F6E6E /* PhotoInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoInfo.swift; sourceTree = "<group>"; };
-		E2D3C2CF1CB5B21B008A5921 /* PhotoView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2D3C2CF1CB5B21B008A5921 /* Foliage Spotter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Foliage Spotter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2D3C2D21CB5B21B008A5921 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2D3C2D41CB5B21B008A5921 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		E2D3C2D71CB5B21B008A5921 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -148,7 +150,7 @@
 		E2D3C2D01CB5B21B008A5921 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E2D3C2CF1CB5B21B008A5921 /* PhotoView.app */,
+				E2D3C2CF1CB5B21B008A5921 /* Foliage Spotter.app */,
 				E2D3C2E31CB5B21B008A5921 /* PhotoViewTests.xctest */,
 				E2D3C2EE1CB5B21B008A5921 /* PhotoViewUITests.xctest */,
 			);
@@ -173,6 +175,7 @@
 				E235FE841CCBFE8800B429D4 /* PhotoCell.swift */,
 				E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */,
 				E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */,
+				E2CB50811D656A7E00F5079A /* Images.xcassets */,
 			);
 			path = PhotoView;
 			sourceTree = "<group>";
@@ -215,7 +218,7 @@
 			);
 			name = PhotoView;
 			productName = PhotoView;
-			productReference = E2D3C2CF1CB5B21B008A5921 /* PhotoView.app */;
+			productReference = E2D3C2CF1CB5B21B008A5921 /* Foliage Spotter.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E2D3C2E21CB5B21B008A5921 /* PhotoViewTests */ = {
@@ -302,6 +305,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2CB50821D656A7E00F5079A /* Images.xcassets in Resources */,
 				E2F4DB1A1CE3B48F008084D8 /* leaf1_yellow.gif in Resources */,
 				E2F4DB1C1CE3B627008084D8 /* leaf_green.gif in Resources */,
 				E2D3C2DD1CB5B21B008A5921 /* LaunchScreen.storyboard in Resources */,
@@ -533,10 +537,11 @@
 			baseConfigurationReference = DE7184495ECEBC6E1EDE70B2 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				INFOPLIST_FILE = PhotoView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = AppInspire.PhotoView;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Foliage Spotter";
 				SWIFT_OBJC_BRIDGING_HEADER = PhotoView/ObjectiveC_bridge.h;
 			};
 			name = Debug;
@@ -546,10 +551,11 @@
 			baseConfigurationReference = A3A1BB39DC8BB61BB48A956C /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				INFOPLIST_FILE = PhotoView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = AppInspire.PhotoView;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Foliage Spotter";
 				SWIFT_OBJC_BRIDGING_HEADER = PhotoView/ObjectiveC_bridge.h;
 			};
 			name = Release;

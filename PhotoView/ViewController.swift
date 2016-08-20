@@ -273,7 +273,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         annotationView.leftCalloutAccessoryView = btn
 
         annotationView.image = img
-        annotationView.frame = CGRect(x: 0, y: 0, width: 12, height: 12)
+        annotationView.frame = CGRect(x: 0, y: 0, width: 48, height: 48)
         return annotationView
     }
  
