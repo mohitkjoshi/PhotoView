@@ -14,6 +14,22 @@ class ZoomViewController: UIViewController{
     
     @IBOutlet weak var scrollView: UIScrollView!
     
+    var photoInfo:PhotoInfo?
+    
+
+
+    @IBAction func directionsButtonPressed(sender: AnyObject) {
+        //open photo location in maps
+        let latitude = photoInfo!.latitude
+        let longitude = photoInfo!.longitude
+        let targetURL = NSURL(string: "http://maps.apple.com/?daddr=\(latitude),\(longitude)")!
+        print(targetURL)
+        if (UIApplication.sharedApplication().canOpenURL(targetURL)) {
+            UIApplication.sharedApplication().openURL(targetURL)
+        } else {
+            print("Could not open url")
+        }
+    }
 
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
@@ -27,7 +43,7 @@ class ZoomViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         scrollView.delegate = self
-        
+        photoInfo = photoCollection[photoIndex] as PhotoInfo
         let photoId = (photoCollection[photoIndex] as? PhotoInfo)?.ID
         let imgURL = NSURL(string: S3BucketURL + photoId!)
         print("Full Image URL :\(imgURL)")

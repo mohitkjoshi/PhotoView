@@ -32,6 +32,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var hasMapRegionChanged = true
     var initialViewLoadComplete = false
     
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("size of collection at viewDidLoad \(photoCollection.count)")
@@ -85,6 +89,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let asset = phAssetResults.firstObject
             let latitude = asset?.location??.coordinate.latitude
             let longitude = asset?.location??.coordinate.longitude
+            if(latitude == nil){
+                
+                let alert = UIAlertView()
+                alert.title = "photo location missing"
+                alert.message = "Your photo could not be uploaded because it doesnt have location information"
+                alert.addButtonWithTitle("Ok")
+                alert.show()
+                dismissViewControllerAnimated(true, completion: nil)
+                return
+            }
+        
             let imageName = url.lastPathComponent
             print(imageName)
             var lat = String((latitude! as Double))
@@ -229,7 +244,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             return nil
         }
         */
-        
+        let alert = UIAlertView()
+        alert.title = "photo uploaded"
+        alert.message = "Your photo has been uploaded."
+        alert.addButtonWithTitle("Ok")
+        alert.show()
+        dismissViewControllerAnimated(true, completion: nil)
+        return
 
         //dismiss image picker
         dismissViewControllerAnimated(true, completion: nil)
@@ -241,7 +262,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         if let annotation = view.annotation as? MKPointAnnotation {
             let latitude = annotation.coordinate.latitude
             let longitude = annotation.coordinate.longitude
-            let targetURL = NSURL(string: "http://maps.apple.com/?daddr=\(latitude),\(longitude)&saddr=Edison")!
+            let targetURL = NSURL(string: "http://maps.apple.com/?daddr=\(latitude),\(longitude)")!
             if (UIApplication.sharedApplication().canOpenURL(targetURL)) {
                 UIApplication.sharedApplication().openURL(targetURL)
             } else {
@@ -249,6 +270,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
         }
     }
+    
+    
     
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -267,13 +290,46 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         
         let annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "myPin")
-
         annotationView.canShowCallout = true
-        let btn = UIButton(type: .DetailDisclosure)
+
+        
+        // 5
+        var bundlePathDir = NSBundle.mainBundle().pathForResource("directions", ofType: "png")
+        var imgDir = UIImage(contentsOfFile: bundlePathDir!)
+        //             let img = UIImage(contentsOfFile: "")
+/*        let imageView = UIImageView(image: imgDir)
+        let tapGestureRecognizer = UITapGestureRecognizer(target:self, action:Selector("imageTapped:"))
+        
+        imageView.userInteractionEnabled = true
+        imageView.addGestureRecognizer(tapGestureRecognizer)
+        
+        imageView.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
+        annotationView.leftCalloutAccessoryView = imageView
+        
+*/
+
+//        let btn = UIButton(type: .DetailDisclosure)
+        let btn = UIButton(type: .Custom)
+        btn.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
+ //       if let imageDirections = UIImage(named: "directions.png") {
+            
+            btn.setImage(imgDir, forState: .Normal)
+ //       }
         annotationView.leftCalloutAccessoryView = btn
 
         annotationView.image = img
-        annotationView.frame = CGRect(x: 0, y: 0, width: 48, height: 48)
+
+        if annotation.isKindOfClass(LeafAnnotation)
+        {
+            annotationView.layer.zPosition = -1
+            annotationView.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        } else if annotation.isKindOfClass(SelectedAnnotation) {
+            annotationView.layer.zPosition = 0
+            annotationView.frame = CGRect(x: 0, y: 0, width: 36, height: 36)
+            
+        }
+        
+
         return annotationView
     }
  
@@ -298,13 +354,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         imageCollectionView.dataSource = self
         
         if(!initialViewLoadComplete) {
-            let currLat = 40.5
-            let currLong = -75.0
+            let currLat = 44.5
+            let currLong = -76.5
             let currLocation = CLLocationCoordinate2DMake(currLat, currLong)
             //        let initLatDelta = 5.0
             //        let initLongDelta = 6.0
-            let initLatDelta = 2.5
-            let initLongDelta = 3.0
+            let initLatDelta = 7.5
+            let initLongDelta = 9.0
             //        imageCollectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
             //        print("registered ViewCell class with collectionView")
             imageCollectionView.backgroundColor = UIColor.orangeColor()
@@ -322,7 +378,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             let long1 = currLong - initLongDelta/2  //west
             let long2 = currLong + initLongDelta/2  //east
             
-            let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(4 , 4)
+            let theSpan:MKCoordinateSpan = MKCoordinateSpanMake(8 , 8)
             //map will be show the region around our location
             let loc = CLLocationCoordinate2DMake(currLat, currLong)
             let theRegion:MKCoordinateRegion = MKCoordinateRegionMake(loc, theSpan)
@@ -347,8 +403,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         //get all photos posted within a the map rectangle
         if(hasMapRegionChanged){
             //before we set photoCollection to a new Array, we need to remove the annotations which were already added to the MapView
-            //        self.mapView.removeAnnotation(selectedAnnotation)
-            
+            let allAnnotations = self.mapView.annotations
+            self.mapView.removeAnnotations(allAnnotations)
             //
             photoCollection = [PhotoInfo]()
             previousPhotoIndex = -1
@@ -398,6 +454,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             
                             let annotation = LeafAnnotation()
                             
+                            
+                            
                             //autolayout engine must be modified in the main thread
                             NSOperationQueue.mainQueue().addOperationWithBlock {
                                 //create a pin and show on the map
@@ -406,7 +464,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                     let location = CLLocationCoordinate2DMake(latitude!, longitude!)
                                     //create a dropped pin
                                     annotation.coordinate = location
-                                    annotation.title = "My Favorite Place"
+                                    annotation.title = "driving directions"
                                     self.mapView.addAnnotation(annotation)
                                     print("added annotation to map")
                                 } else {
@@ -513,6 +571,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
         print("You highlighted cell #\(indexPath.item)!")
         highlghtAnnotation(indexPath.item)
+        if(previousPhotoIndex != -1){
+        //    let cell = collectionView.cellForItemAtIndexPath(NSIndexPath(index: previousPhotoIndex))
+        }
+        
+        //let cell = collectionView.cellForItemAtIndexPath(indexPath)
+        //cell!.layer.borderWidth = 1.0
+        //cell!.layer.borderColor = UIColor.yellowColor().CGColor
+    
     }
 /*
     // make a cell for each cell index path
@@ -541,7 +607,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             
             let regularAnnotation = LeafAnnotation()
             regularAnnotation.coordinate = selectedAnnotation.coordinate
-            regularAnnotation.title = "fall color photo"
+            regularAnnotation.title = "driving directions"
             photoInfo?.annotation = regularAnnotation
 //            NSOperationQueue.mainQueue().addOperationWithBlock {
                 self.mapView.removeAnnotation(selectedAnnotation)
@@ -557,7 +623,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let selectedAnnotation = SelectedAnnotation()
         selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
-        selectedAnnotation.title = "location of highlighted photo"
+        selectedAnnotation.title = "driving directions"
         photoInfo.annotation = selectedAnnotation
 //        NSOperationQueue.mainQueue().addOperationWithBlock {
             self.mapView.removeAnnotation(regularAnnotation!)
@@ -569,6 +635,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     }
     
+}
+
+extension UINavigationController {
+    public override func shouldAutorotate() -> Bool {
+        return false
+    }
+
 }
 
 

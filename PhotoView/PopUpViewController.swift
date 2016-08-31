@@ -27,5 +27,8 @@ class PopUpViewController: UIViewController {
 //        self.addSubview(imgView)
         
     }
+    
+    
+    
 
 }
