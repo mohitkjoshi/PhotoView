@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E2D3C2CE1CB5B21B008A5921"
                BuildableName = "Autumn Vista.app"
-               BlueprintName = "PhotoView"
+               BlueprintName = "&#9;"
                ReferencedContainer = "container:PhotoView.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -54,7 +54,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2D3C2CE1CB5B21B008A5921"
             BuildableName = "Autumn Vista.app"
-            BlueprintName = "PhotoView"
+            BlueprintName = "&#9;"
             ReferencedContainer = "container:PhotoView.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -77,7 +77,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2D3C2CE1CB5B21B008A5921"
             BuildableName = "Autumn Vista.app"
-            BlueprintName = "PhotoView"
+            BlueprintName = "&#9;"
             ReferencedContainer = "container:PhotoView.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -96,7 +96,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E2D3C2CE1CB5B21B008A5921"
             BuildableName = "Autumn Vista.app"
-            BlueprintName = "PhotoView"
+            BlueprintName = "&#9;"
             ReferencedContainer = "container:PhotoView.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

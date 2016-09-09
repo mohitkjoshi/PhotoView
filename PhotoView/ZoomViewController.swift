@@ -61,6 +61,12 @@ class ZoomViewController: UIViewController{
                 //autolayout engine must be modified in the main thread
                 NSOperationQueue.mainQueue().addOperationWithBlock {
                     let img = UIImage(data: data!)
+                    if (img == nil){
+                        print("image nil")
+                        self.navigationController?.popToRootViewControllerAnimated(true)
+                        return
+                    }
+                    
                     self.zoomImgView.contentMode = .ScaleAspectFill	
                     self.zoomImgView.image  = img
                     print("image set \(img!.size)")

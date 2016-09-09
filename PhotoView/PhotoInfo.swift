@@ -14,12 +14,21 @@ class PhotoInfo{
     var latitude:Double = 0.0
     var longitude:Double = 0.0
     var ID = ""
+    var date = ""
     var annotation: MKPointAnnotation?
-    init(img:UIImage, lat:Double, long:Double, id:String, annotation:MKPointAnnotation){
+    var annotationType:String
+    init(img:UIImage, lat:Double, long:Double, id:String, date:String, annotation:MKPointAnnotation){
         image = img
         latitude = lat
         longitude = long
         ID = id
+        self.date = date
         self.annotation = annotation
+        if annotation.isKindOfClass(LeafAnnotation)
+        {
+            annotationType = "Leaf"
+        } else         {
+            annotationType = "Old"
+        }
     }
 }

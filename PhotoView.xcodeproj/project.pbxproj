@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		6D3FD50113BB767C603F8638 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5365FDE71A3F69C368863391 /* libPods.a */; };
 		E2011C921D70EF1300B433BD /* directions.png in Resources */ = {isa = PBXBuildFile; fileRef = E2011C911D70EF1300B433BD /* directions.png */; };
+		E20A53061D7C5BEB00B88B7B /* OldAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20A53051D7C5BEB00B88B7B /* OldAnnotation.swift */; };
+		E20A53081D7C867200B88B7B /* leaf_brown.gif in Resources */ = {isa = PBXBuildFile; fileRef = E20A53071D7C867200B88B7B /* leaf_brown.gif */; };
 		E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */; };
 		E235FE851CCBFE8800B429D4 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E235FE841CCBFE8800B429D4 /* PhotoCell.swift */; };
 		E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */ = {isa = PBXBuildFile; fileRef = E235FE891CCC62DF00B429D4 /* leaf.gif */; };
@@ -53,6 +55,8 @@
 		A3A1BB39DC8BB61BB48A956C /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		DE7184495ECEBC6E1EDE70B2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		E2011C911D70EF1300B433BD /* directions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = directions.png; path = ../directions.png; sourceTree = "<group>"; };
+		E20A53051D7C5BEB00B88B7B /* OldAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OldAnnotation.swift; sourceTree = "<group>"; };
+		E20A53071D7C867200B88B7B /* leaf_brown.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf_brown.gif; sourceTree = "<group>"; };
 		E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomViewController.swift; sourceTree = "<group>"; };
 		E235FE841CCBFE8800B429D4 /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		E235FE891CCC62DF00B429D4 /* leaf.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = leaf.gif; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 		E235FE861CCC58CE00B429D4 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				E20A53071D7C867200B88B7B /* leaf_brown.gif */,
 				E2011C911D70EF1300B433BD /* directions.png */,
 				E2F4DB211CE3BBFC008084D8 /* leaf_orange_dark.gif */,
 				E2F4DB1F1CE3B89D008084D8 /* leaf_orange.gif */,
@@ -177,6 +182,7 @@
 				E235FE821CCBD6AB00B429D4 /* ZoomViewController.swift */,
 				E235FE841CCBFE8800B429D4 /* PhotoCell.swift */,
 				E235FE8D1CCD06D900B429D4 /* LeafAnnotation.swift */,
+				E20A53051D7C5BEB00B88B7B /* OldAnnotation.swift */,
 				E235FE8F1CCD077700B429D4 /* SelectedAnnotation.swift */,
 				E2CB50811D656A7E00F5079A /* Images.xcassets */,
 			);
@@ -204,9 +210,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E2D3C2CE1CB5B21B008A5921 /* PhotoView */ = {
+		E2D3C2CE1CB5B21B008A5921 /* 	 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E2D3C2F71CB5B21B008A5921 /* Build configuration list for PBXNativeTarget "PhotoView" */;
+			buildConfigurationList = E2D3C2F71CB5B21B008A5921 /* Build configuration list for PBXNativeTarget "	" */;
 			buildPhases = (
 				314BCDD700F5AD5B3E910B70 /* Check Pods Manifest.lock */,
 				E2D3C2CB1CB5B21B008A5921 /* Sources */,
@@ -219,7 +225,7 @@
 			);
 			dependencies = (
 			);
-			name = PhotoView;
+			name = "	";
 			productName = PhotoView;
 			productReference = E2D3C2CF1CB5B21B008A5921 /* Autumn Vista.app */;
 			productType = "com.apple.product-type.application";
@@ -297,7 +303,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E2D3C2CE1CB5B21B008A5921 /* PhotoView */,
+				E2D3C2CE1CB5B21B008A5921 /* 	 */,
 				E2D3C2E21CB5B21B008A5921 /* PhotoViewTests */,
 				E2D3C2ED1CB5B21B008A5921 /* PhotoViewUITests */,
 			);
@@ -315,6 +321,7 @@
 				E2011C921D70EF1300B433BD /* directions.png in Resources */,
 				E2D3C2DD1CB5B21B008A5921 /* LaunchScreen.storyboard in Resources */,
 				E2D3C2DA1CB5B21B008A5921 /* Assets.xcassets in Resources */,
+				E20A53081D7C867200B88B7B /* leaf_brown.gif in Resources */,
 				E2F4DB221CE3BBFC008084D8 /* leaf_orange_dark.gif in Resources */,
 				E235FE8A1CCC62DF00B429D4 /* leaf.gif in Resources */,
 				E2D3C2D81CB5B21B008A5921 /* Main.storyboard in Resources */,
@@ -397,6 +404,7 @@
 				E235FE831CCBD6AB00B429D4 /* ZoomViewController.swift in Sources */,
 				E2D3AD751CC404F8004F6E6E /* PhotoInfo.swift in Sources */,
 				E2D3C2D51CB5B21B008A5921 /* ViewController.swift in Sources */,
+				E20A53061D7C5BEB00B88B7B /* OldAnnotation.swift in Sources */,
 				E2DAD5BA1CC435B400F4200C /* CustomCell.txt in Sources */,
 				E2D3C2D31CB5B21B008A5921 /* AppDelegate.swift in Sources */,
 				E235FE901CCD077700B429D4 /* SelectedAnnotation.swift in Sources */,
@@ -424,12 +432,12 @@
 /* Begin PBXTargetDependency section */
 		E2D3C2E51CB5B21B008A5921 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E2D3C2CE1CB5B21B008A5921 /* PhotoView */;
+			target = E2D3C2CE1CB5B21B008A5921 /* 	 */;
 			targetProxy = E2D3C2E41CB5B21B008A5921 /* PBXContainerItemProxy */;
 		};
 		E2D3C2F01CB5B21B008A5921 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E2D3C2CE1CB5B21B008A5921 /* PhotoView */;
+			target = E2D3C2CE1CB5B21B008A5921 /* 	 */;
 			targetProxy = E2D3C2EF1CB5B21B008A5921 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -635,7 +643,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E2D3C2F71CB5B21B008A5921 /* Build configuration list for PBXNativeTarget "PhotoView" */ = {
+		E2D3C2F71CB5B21B008A5921 /* Build configuration list for PBXNativeTarget "	" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2D3C2F81CB5B21B008A5921 /* Debug */,

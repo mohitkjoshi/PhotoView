@@ -283,7 +283,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             bundlePath = NSBundle.mainBundle().pathForResource((annotation as? LeafAnnotation)?.imageName, ofType: "gif")
         } else if annotation.isKindOfClass(SelectedAnnotation) {
             bundlePath = NSBundle.mainBundle().pathForResource((annotation as? SelectedAnnotation)?.imageName, ofType: "gif")
-       
+        } else if annotation.isKindOfClass(OldAnnotation){
+            bundlePath = NSBundle.mainBundle().pathForResource((annotation as? OldAnnotation)?.imageName, ofType: "gif")
         }
             
         var img = UIImage(contentsOfFile: bundlePath!)
@@ -319,7 +320,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
         annotationView.image = img
 
-        if annotation.isKindOfClass(LeafAnnotation)
+        if (annotation.isKindOfClass(LeafAnnotation) || annotation.isKindOfClass(OldAnnotation))
         {
             annotationView.layer.zPosition = -1
             annotationView.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
@@ -446,13 +447,26 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                         let getResponse = try NSJSONSerialization.JSONObjectWithData(receivedData, options: .AllowFragments)
                         
                         let list  = getResponse["list"]
+                        var listSize = (list as? NSArray)!.count
                         for listitem in (list as? NSArray)!{
+                            
                             let photoId = String(listitem["id"])
                             let latitude = Double(String(listitem["lat"]))
                             let longitude = Double(String(listitem["long"]))
+                            let dt = String(listitem["date"])
                             print(String(photoId) + String(latitude) )
                             
-                            let annotation = LeafAnnotation()
+                            let date = NSDate()
+                            let priorDay = date.dateByAddingTimeInterval(NSTimeInterval(-172800))
+                            
+                            let photoDate = NSDate(dateString:dt)
+                            var annotation:MKPointAnnotation
+                            if (photoDate.compare(priorDay) == NSComparisonResult.OrderedDescending){
+                                annotation = LeafAnnotation()
+                            } else {
+                                annotation = OldAnnotation()
+                            }
+                            
                             
                             
                             
@@ -464,7 +478,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                     let location = CLLocationCoordinate2DMake(latitude!, longitude!)
                                     //create a dropped pin
                                     annotation.coordinate = location
-                                    annotation.title = "driving directions"
+                                    annotation.title = dt
                                     self.mapView.addAnnotation(annotation)
                                     print("added annotation to map")
                                 } else {
@@ -488,11 +502,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                     //autolayout engine must be modified in the main thread
                                     NSOperationQueue.mainQueue().addOperationWithBlock {
                                         let img = UIImage(data: data!)
-                                        photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, annotation:annotation ))
+                                        if (img == nil){
+                                            print("Thumbnail not found")
+                                            listSize = listSize - 1
+                                            
+                                        } else {
                                         
+                                            photoCollection.append(PhotoInfo(img: img!, lat: latitude!, long: longitude!, id: photoId, date:dt, annotation:annotation ))
+                                        }
                                         //**** if this is the last photo, reload data in collection view, and set the region on map to show annotations
                                         
-                                        if(photoCollection.count == (list as? NSArray)!.count) {
+                                        if(photoCollection.count == listSize) {
                                             self.imageCollectionView.reloadData()
                                             //LoadInitialView and MapResize get fired simultaneously. Wait till last image load to avoid multiple loads in parallel.
                                             self.initialViewLoadComplete = true
@@ -604,10 +624,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         if(previousPhotoIndex != -1){
             let photoInfo = photoCollection[previousPhotoIndex] as? PhotoInfo
             let selectedAnnotation = photoInfo!.annotation!
-            
-            let regularAnnotation = LeafAnnotation()
+            var regularAnnotation:MKPointAnnotation
+            if(photoInfo!.annotationType == "Leaf"){
+                regularAnnotation = LeafAnnotation()
+            }
+            else {
+                regularAnnotation = OldAnnotation()
+            }
             regularAnnotation.coordinate = selectedAnnotation.coordinate
-            regularAnnotation.title = "driving directions"
+            regularAnnotation.title = selectedAnnotation.title
             photoInfo?.annotation = regularAnnotation
 //            NSOperationQueue.mainQueue().addOperationWithBlock {
                 self.mapView.removeAnnotation(selectedAnnotation)
@@ -623,7 +648,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         let selectedAnnotation = SelectedAnnotation()
         selectedAnnotation.coordinate = (regularAnnotation?.coordinate)!
-        selectedAnnotation.title = "driving directions"
+        selectedAnnotation.title = (regularAnnotation?.title)!
         photoInfo.annotation = selectedAnnotation
 //        NSOperationQueue.mainQueue().addOperationWithBlock {
             self.mapView.removeAnnotation(regularAnnotation!)
@@ -642,6 +667,18 @@ extension UINavigationController {
         return false
     }
 
+}
+
+extension NSDate
+{
+    convenience
+    init(dateString:String) {
+        let dateStringFormatter = NSDateFormatter()
+        dateStringFormatter.dateFormat = "yyyy-MM-dd"
+        dateStringFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        let d = dateStringFormatter.dateFromString(dateString)!
+        self.init(timeInterval:0, sinceDate:d)
+    }
 }
 
 
